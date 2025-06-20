@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
 import {
   Card,
   CardContent,
@@ -10,9 +7,6 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import { Checkbox } from "../../components/ui/checkbox";
-import { Separator } from "../../components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import SocialLogin from "./components/SocialLogin";
