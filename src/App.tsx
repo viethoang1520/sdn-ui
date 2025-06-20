@@ -7,10 +7,10 @@ function App() {
 
   return (
     <MainLayout>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/user-dashboard" element={<UserDashboard/>}/>
-      </Routes>
+     <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/user-dashboard" element={<UserDashboard/>}/>
+     </Routes>
     </MainLayout>
   )
 }
