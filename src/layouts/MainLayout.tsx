@@ -35,7 +35,7 @@ const Header = () => (
       </nav>
       <div className="flex items-center gap-4">
         <Button variant="outline" asChild className="hidden md:flex">
-          <Link to="/login">Đăng nhập / Đăng ký</Link>
+          <Link to="/auth">Đăng nhập / Đăng ký</Link>
         </Button>
         {/* Nếu muốn giữ menu mobile tĩnh, có thể để nút này, hoặc xóa luôn */}
       </div>

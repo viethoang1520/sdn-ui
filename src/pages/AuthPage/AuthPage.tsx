@@ -79,11 +79,11 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4 pt-10">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-gray-800">
-            Hệ thống Metro Bến Thành - Suối Tiên
+            Metro Bến Thành - Suối Tiên
           </CardTitle>
           <CardDescription className="text-center text-gray-600">
             Đăng nhập hoặc tạo tài khoản để tiếp tục
