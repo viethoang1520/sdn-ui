@@ -1,0 +1,133 @@
+import React, { useState } from "react";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Separator } from "../../components/ui/separator";
+import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
+import LoginForm from "./components/LoginForm";
+import RegisterForm from "./components/RegisterForm";
+import SocialLogin from "./components/SocialLogin";
+
+const AuthPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Login form state
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // Register form state
+  const [registerData, setRegisterData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Login data:", loginData);
+      setIsLoading(false);
+      // Handle login logic here
+    }, 2000);
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (registerData.password !== registerData.confirmPassword) {
+      alert("Mật khẩu không khớp!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Register data:", registerData);
+      setIsLoading(false);
+      // Handle register logic here
+    }, 2000);
+  };
+
+  const handleGoogleLogin = () => {
+    console.log("Google login clicked");
+    // Implement Google OAuth logic here
+  };
+
+  const handleFacebookLogin = () => {
+    console.log("Facebook login clicked");
+    // Implement Facebook OAuth logic here
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center text-gray-800">
+            Hệ thống Metro Bến Thành - Suối Tiên
+          </CardTitle>
+          <CardDescription className="text-center text-gray-600">
+            Đăng nhập hoặc tạo tài khoản để tiếp tục
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login">Đăng nhập</TabsTrigger>
+              <TabsTrigger value="register">Đăng ký</TabsTrigger>
+            </TabsList>
+            <TabsContent value="login" className="space-y-4">
+              <LoginForm
+                loginData={loginData}
+                setLoginData={setLoginData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                isLoading={isLoading}
+                rememberMe={rememberMe}
+                setRememberMe={setRememberMe}
+                onSubmit={handleLogin}
+              />
+            </TabsContent>
+            <TabsContent value="register" className="space-y-4">
+              <RegisterForm
+                registerData={registerData}
+                setRegisterData={setRegisterData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                showConfirmPassword={showConfirmPassword}
+                setShowConfirmPassword={setShowConfirmPassword}
+                isLoading={isLoading}
+                onSubmit={handleRegister}
+              />
+            </TabsContent>
+          </Tabs>
+          <SocialLogin
+            onGoogleLogin={handleGoogleLogin}
+            onFacebookLogin={handleFacebookLogin}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default AuthPage;
