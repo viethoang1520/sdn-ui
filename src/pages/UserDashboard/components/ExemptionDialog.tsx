@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface ExemptionDialogProps {
   open: boolean;
@@ -12,8 +13,9 @@ interface ExemptionDialogProps {
   exemptionForm: {
     priorityGroup: string;
     documents: File[];
+    validTo?: { month: string; year: string };
   };
-  setExemptionForm: (form: { priorityGroup: string; documents: File[] }) => void;
+  setExemptionForm: (form: { priorityGroup: string; documents: File[]; validTo?: { month: string; year: string } }) => void;
   exemptionStatus: { type: "success" | "error" | null; message: string };
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   removeDocument: (index: number) => void;
@@ -86,6 +88,55 @@ const ExemptionDialog: React.FC<ExemptionDialogProps> = ({
           </Select>
         </div>
         <div className="space-y-2">
+          <Label htmlFor="valid-to">
+            Thời hạn hiệu lực *{" "}
+            <span className="text-xs text-red-500">
+              (Giữ mặc định nếu bạn thuộc diện miễn phí)
+            </span>
+          </Label>
+          <div className="flex gap-2">
+            <Select
+              value={exemptionForm.validTo?.month || ""}
+              onValueChange={(month) =>
+                setExemptionForm({
+                  ...exemptionForm,
+                  validTo: { month, year: exemptionForm.validTo?.year || "" },
+                })
+              }
+            >
+              <SelectTrigger className="w-28">
+                <SelectValue placeholder="Tháng" />
+              </SelectTrigger>
+              <SelectContent>
+                {[...Array(12)].map((_, i) => (
+                  <SelectItem key={i + 1} value={String(i + 1).padStart(2, "0")}>{`Tháng ${i + 1}`}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={exemptionForm.validTo?.year || ""}
+              onValueChange={(year) =>
+                setExemptionForm({
+                  ...exemptionForm,
+                  validTo: { month: exemptionForm.validTo?.month || "", year },
+                })
+              }
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Năm" />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 10 }, (_, i) => {
+                  const year = new Date().getFullYear() + i;
+                  return (
+                    <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="documents">Tài liệu chứng minh *</Label>
           <div className="space-y-3">
             <div className="flex items-center justify-center w-full">
@@ -155,7 +206,7 @@ const ExemptionDialog: React.FC<ExemptionDialogProps> = ({
           variant="outline"
           onClick={() => {
             onClose();
-            setExemptionForm({ priorityGroup: "", documents: [] });
+            setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
           }}
           className="w-full sm:w-auto"
         >
