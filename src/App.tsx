@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import UserDashboard from "./pages/UserDashboard/UserDashboard"
 import MainLayout from "./layouts/MainLayout"
 import AuthPage from "./pages/AuthPage/AuthPage"
+import Tickets from "./pages/UserDashboard/components/Tickets"
 import TrainSchedule from "./pages/TrainSchedule/TrainSchedule"
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Route path="/" element={<Home/>}/>
       <Route path="/user-dashboard" element={<UserDashboard/>}/>
       <Route path="/auth" element={<AuthPage/>}/>
+      <Route path="/tickets" element={<Tickets/>}/>
       <Route path="/train-schedule" element={<TrainSchedule/>}/>
      </Routes>
     </MainLayout>

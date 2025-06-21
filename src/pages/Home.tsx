@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronRight, CreditCard, QrCode, User, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -13,6 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Badge } from "../components/ui/badge";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleBuyTicket = () => {
+    navigate('/tickets');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -27,6 +34,7 @@ const Home = () => {
           <Button
             size="lg"
             className="mt-4 bg-white text-[#003087] hover:bg-white/90"
+            onClick={handleBuyTicket}
           >
             Bắt đầu <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
@@ -56,7 +64,7 @@ const Home = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Mua ngay</Button>
+                <Button className="w-full" onClick={handleBuyTicket}>Mua ngay</Button>
               </CardFooter>
             </Card>
 
@@ -74,7 +82,7 @@ const Home = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Mua ngay</Button>
+                <Button className="w-full" onClick={handleBuyTicket}>Mua ngay</Button>
               </CardFooter>
             </Card>
 
@@ -92,7 +100,7 @@ const Home = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Mua ngay</Button>
+                <Button className="w-full" onClick={handleBuyTicket}>Mua ngay</Button>
               </CardFooter>
             </Card>
 
@@ -113,7 +121,7 @@ const Home = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Mua ngay</Button>
+                <Button className="w-full" onClick={handleBuyTicket}>Mua ngay</Button>
               </CardFooter>
             </Card>
           </div>
