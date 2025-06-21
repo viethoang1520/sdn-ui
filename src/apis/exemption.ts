@@ -1,7 +1,7 @@
 import { getToken } from "@/utils/storage";
 import axiosClient from "./axiosClient";
 
-export const applyStudentDiscount = async (exemptionForm: any) => {
+export const applyStudentDiscount = async (exemptionForm: any): Promise<{error_code: number, message: string}> => {
   const { validTo } = exemptionForm;
   const token = getToken()
   return await axiosClient(token).post('discount/student', {
@@ -11,7 +11,7 @@ export const applyStudentDiscount = async (exemptionForm: any) => {
   })
 }
 
-export const applyFreeDiscount = async (exemptionForm: any) => {
+export const applyFreeDiscount = async (exemptionForm: any): Promise<{error_code: number, message: string}> => {
   const {validTo, priorityGroup} = exemptionForm
   const token = getToken()
   return await axiosClient(token).post('discount/free', {
