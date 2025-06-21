@@ -20,12 +20,12 @@ const Header = () => (
         <Link to="/" className="text-sm font-medium text-primary">
           Trang chủ
         </Link>
-        {/* <Link
-          to="/tickets"
+        <Link
+          to="/train-schedule"
           className="text-sm font-medium text-muted-foreground hover:text-primary"
         >
-          Vé
-        </Link> */}
+          Lịch trình
+        </Link>
         <Link
           to="/user-dashboard"
           className="text-sm font-medium text-muted-foreground hover:text-primary"

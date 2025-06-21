@@ -31,6 +31,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import DirectionSelector from "./components/DirectionSelector";
+import DepartureTimes from "./components/DepartureTimes";
+import ScheduleDetailsDialog from "./components/ScheduleDetailsDialog";
 
 interface Station {
   id: string;
@@ -264,103 +267,19 @@ const TrainSchedule = () => {
 
       <div className="container py-8">
         {/* Direction Selection */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ArrowRight className="h-5 w-5" />
-              {t.selectDirection}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Select
-              value={selectedDirection}
-              onValueChange={setSelectedDirection}
-            >
-              <SelectTrigger className="w-full md:w-96">
-                <SelectValue placeholder={t.selectDirection} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ben-thanh-to-suoi-tien">
-                  {t.benThanhToSuoiTien}
-                </SelectItem>
-                <SelectItem value="suoi-tien-to-ben-thanh">
-                  {t.suoiTienToBenThanh}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
+        <DirectionSelector
+          t={t}
+          selectedDirection={selectedDirection}
+          setSelectedDirection={setSelectedDirection}
+        />
 
         {/* Departure Times */}
         {selectedDirection ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                {t.departureTime}
-              </CardTitle>
-              <CardDescription>{t.selectTime}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {getCurrentSchedules().map((schedule, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="h-16 text-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => handleTimeClick(schedule)}
-                  >
-                    {schedule.departureTime}
-                  </Button>
-                ))}
-              </div>
-
-              {/* Schedule Details Dialog */}
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                  {selectedSchedule && (
-                    <>
-                      <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                          <Train className="h-5 w-5" />
-                          {t.scheduleDetails} - {selectedSchedule.departureTime}
-                        </DialogTitle>
-                        <DialogDescription>
-                          {selectedDirection === "ben-thanh-to-suoi-tien"
-                            ? t.benThanhToSuoiTien
-                            : t.suoiTienToBenThanh}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="mt-4">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>{t.station}</TableHead>
-                              <TableHead>{t.arrivalTime}</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedSchedule.stations.map(
-                              (entry, stationIndex) => (
-                                <TableRow key={stationIndex}>
-                                  <TableCell className="font-medium">
-                                    {getStationName(entry.stationId)}
-                                  </TableCell>
-                                  <TableCell className="text-primary font-semibold">
-                                    {entry.arrivalTime}
-                                  </TableCell>
-                                </TableRow>
-                              ),
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </>
-                  )}
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
+          <DepartureTimes
+            t={t}
+            schedules={getCurrentSchedules()}
+            handleTimeClick={handleTimeClick}
+          />
         ) : (
           <Card>
             <CardContent className="py-12 text-center">
@@ -369,6 +288,14 @@ const TrainSchedule = () => {
             </CardContent>
           </Card>
         )}
+        <ScheduleDetailsDialog
+          t={t}
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          selectedSchedule={selectedSchedule}
+          selectedDirection={selectedDirection}
+          getStationName={getStationName}
+        />
       </div>
     </div>
   );
