@@ -8,12 +8,6 @@ import QRCodeDialog from "./components/QRCodeDialog";
 import ExemptionDialog from "./components/ExemptionDialog";
 import { applyFreeDiscount, applyStudentDiscount } from "@/apis/exemption";
 
-// const enum PriorityCode {
-//   STUDENT = "Sinh viên",
-//   CHILD = "Trẻ dưới 6 tuổi",
-//   SENIOR = "Người trên 60 tuổi",
-//   VETERAN = "Cựu chiến binh",
-// }
 interface UserDashboardProps {
   user?: {
     name: string;
@@ -158,10 +152,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     }
     if (exemptionForm.priorityGroup == 'student') {
       const response = await applyStudentDiscount(exemptionForm)
-      console.log(response)
+      if (response.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
     } else {
       const response = await applyFreeDiscount(exemptionForm)
-      console.log(response)
+      if (response.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
     }
     setExemptionStatus({
       type: "success",
