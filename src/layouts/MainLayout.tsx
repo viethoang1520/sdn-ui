@@ -21,13 +21,13 @@ const Header = () => (
           Trang chủ
         </Link>
         <Link
-          to="/tickets"
+          to="/train-schedule"
           className="text-sm font-medium text-muted-foreground hover:text-primary"
         >
-          Vé
+          Lịch trình
         </Link>
         <Link
-          to="/account"
+          to="/user-dashboard"
           className="text-sm font-medium text-muted-foreground hover:text-primary"
         >
           Tài khoản

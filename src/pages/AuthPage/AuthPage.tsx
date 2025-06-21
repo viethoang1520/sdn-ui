@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,8 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import SocialLogin from "./components/SocialLogin";
+import { login, register } from "@/apis/authentication";
+import { useNavigate } from "react-router";
 
 const AuthPage = () => {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,15 +22,14 @@ const AuthPage = () => {
 
   // Login form state
   const [loginData, setLoginData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
   // Register form state
   const [registerData, setRegisterData] = useState({
     fullName: "",
-    email: "",
-    phone: "",
+    username: "",
     password: "",
     confirmPassword: "",
   });
@@ -35,13 +37,17 @@ const AuthPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login data:", loginData);
+    const response = await login(loginData)
+    const token = response.data.token
+    console.log(response)
+    if (token) {
+      localStorage.setItem('token', token)
+      console.log("Login token:", localStorage.getItem('token'));
       setIsLoading(false);
-      // Handle login logic here
-    }, 2000);
+      navigate('/')
+    } else {
+      alert(response.data.message)
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -53,13 +59,18 @@ const AuthPage = () => {
       setIsLoading(false);
       return;
     }
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Register data:", registerData);
+    const response = await register(registerData)
+    const data = response.data
+    const token = data.token
+    if (token) {
+      localStorage.setItem('token', token)
+      console.log("Register token:", localStorage.getItem('token'));
       setIsLoading(false);
-      // Handle register logic here
-    }, 2000);
+      navigate('/')
+    } else {
+      alert(response.data.message)
+    }
+   
   };
 
   const handleGoogleLogin = () => {

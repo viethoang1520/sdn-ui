@@ -6,8 +6,8 @@ import { Checkbox } from "../../../components/ui/checkbox";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
-  loginData: { email: string; password: string };
-  setLoginData: (data: { email: string; password: string }) => void;
+  loginData: { username: string; password: string };
+  setLoginData: (data: { username: string; password: string }) => void;
   showPassword: boolean;
   setShowPassword: (show: boolean) => void;
   isLoading: boolean;
@@ -28,16 +28,15 @@ const LoginForm: React.FC<LoginFormProps> = ({
 }) => (
   <form onSubmit={onSubmit} className="space-y-4">
     <div className="space-y-2">
-      <Label htmlFor="login-email">Email hoặc Tên đăng nhập</Label>
+      <Label htmlFor="login-username">Tên đăng nhập</Label>
       <div className="relative">
         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
         <Input
-          id="login-email"
-          type="email"
-          placeholder="Nhập email của bạn"
+          id="login-username"
+          placeholder="Nhập username của bạn"
           className="pl-10"
-          value={loginData.email}
-          onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+          value={loginData.username}
+          onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
           required
         />
       </div>

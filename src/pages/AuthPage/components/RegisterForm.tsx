@@ -2,13 +2,12 @@ import React from "react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 
 interface RegisterFormProps {
   registerData: {
     fullName: string;
-    email: string;
-    phone: string;
+    username: string;
     password: string;
     confirmPassword: string;
   };
@@ -48,31 +47,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       </div>
     </div>
     <div className="space-y-2">
-      <Label htmlFor="register-email">Email</Label>
+      <Label htmlFor="register-username">Username</Label>
       <div className="relative">
         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
         <Input
-          id="register-email"
-          type="email"
-          placeholder="Nhập email của bạn"
+          id="register-username"
+          type="username"
+          placeholder="Nhập username của bạn"
           className="pl-10"
-          value={registerData.email}
-          onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-          required
-        />
-      </div>
-    </div>
-    <div className="space-y-2">
-      <Label htmlFor="register-phone">Số điện thoại</Label>
-      <div className="relative">
-        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-        <Input
-          id="register-phone"
-          type="tel"
-          placeholder="Nhập số điện thoại"
-          className="pl-10"
-          value={registerData.phone}
-          onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+          value={registerData.username}
+          onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
           required
         />
       </div>
