@@ -346,8 +346,8 @@ const Tickets: React.FC = () => {
             {t[language].subtitle}
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
-            <div>
-              <Label htmlFor="category">Đối tượng</Label>
+            <div className="mt-2">
+              <Label htmlFor="category" className="mb-2 block">Đối tượng</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-56">
                   <SelectValue placeholder="Chọn đối tượng" />
@@ -377,16 +377,17 @@ const Tickets: React.FC = () => {
                 {t[language].selectTicketType}
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6 items-stretch">
                 {ticketTypes.map((ticket, index) => (
                   <motion.div
                     key={ticket.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
+                    className="h-full"
                   >
                     <Card
-                      className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${selectedTicketType === ticket.id
+                      className={`h-full flex flex-col cursor-pointer transition-all duration-300 hover:shadow-lg ${selectedTicketType === ticket.id
                           ? 'ring-2 ring-blue-500 bg-blue-50'
                           : 'hover:bg-gray-50'
                         }`}
