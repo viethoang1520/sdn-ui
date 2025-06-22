@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Train } from "lucide-react"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 interface ScheduleDetailsDialogProps {
   t: any;
@@ -22,13 +23,17 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
 }) => (
   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogTitle asChild>
+        <VisuallyHidden>
+          {t.scheduleDetails}
+        </VisuallyHidden>
+      </DialogTitle>
       {selectedSchedule && (
         <>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Train className="h-5 w-5" />
-              {t.scheduleDetails}
-              {/* - {selectedSchedule.departureTime} */}
+              {t.scheduleDetails} - {selectedSchedule[0].arrivalTime}
             </DialogTitle>
             <DialogDescription>
               {selectedDirection === "Bến Thành - Suối Tiên"
