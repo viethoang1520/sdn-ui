@@ -1,17 +1,33 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { QrCode, Ticket } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+interface TicketType {
+  expiry_date?: string;
+  name: string;
+  base_price: number;
+}
+
 interface TicketItem {
   id: string;
+  transactionId: string;
   type: string;
-  validFrom: string;
-  validTo: string;
-  stations: string;
-  qrCode: string;
+  status: string;
+  createdAt: string;
+  expiryDate?: string;
+  basePrice: number;
+  startStation?: string | null;
+  endStation?: string | null;
 }
 
 interface ActiveTicketsTabProps {
@@ -19,7 +35,10 @@ interface ActiveTicketsTabProps {
   onShowQR: (ticket: TicketItem) => void;
 }
 
-const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({ activeTickets, onShowQR }) => (
+const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({
+  activeTickets,
+  onShowQR,
+}) => (
   <Card>
     <CardHeader>
       <CardTitle>Vé điện tử</CardTitle>
@@ -32,20 +51,50 @@ const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({ activeTickets, onSh
             <CardHeader className="bg-blue-50 pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg">{ticket.type}</CardTitle>
-                <Badge>{ticket.id}</Badge>
+                <Badge>{ticket.transactionId}</Badge>
               </div>
-              <CardDescription>{ticket.stations}</CardDescription>
+              {ticket.startStation && ticket.endStation ? (
+                <CardDescription>
+                  Tuyến: {ticket.startStation} - {ticket.endStation}
+                </CardDescription>
+              ) : (
+                <CardDescription>Vé sử dụng: {ticket.type}</CardDescription>
+              )}
             </CardHeader>
             <CardContent className="pt-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Hiệu lực từ:</span>
-                  <span>{ticket.validFrom}</span>
+                  <span className="text-muted-foreground">Giá vé:</span>
+                  <span>
+                    {typeof ticket.basePrice === "number"
+                      ? ticket.basePrice.toLocaleString() + " VND"
+                      : "-"}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Hiệu lực đến:</span>
-                  <span>{ticket.validTo}</span>
+                  <span className="text-muted-foreground">Trạng thái:</span>
+                  <span>{ticket.status || "-"}</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Ngày mua:</span>
+                  <span>
+                    {ticket.createdAt
+                      ? new Date(ticket.createdAt).toLocaleString("vi-VN")
+                      : "-"}
+                  </span>
+                </div>
+                {ticket.expiryDate && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Hạn sử dụng:</span>
+                    <span>
+                      {ticket.expiryDate
+                        ? new Date(ticket.expiryDate).toLocaleDateString(
+                            "vi-VN"
+                          )
+                        : "-"}
+                    </span>
+                  </div>
+                )}
                 <Separator className="my-2" />
                 <div className="flex justify-center">
                   <Button
