@@ -1,39 +1,13 @@
-import React, { useState } from "react";
-import { Clock, ArrowRight, Train } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import DirectionSelector from "./components/DirectionSelector";
+import { Train } from "lucide-react";
+import { useEffect, useState } from "react";
 import DepartureTimes from "./components/DepartureTimes";
+import DirectionSelector from "./components/DirectionSelector";
 import ScheduleDetailsDialog from "./components/ScheduleDetailsDialog";
+import { getScheduleByDirection } from "@/apis/schedule";
 
 interface Station {
   id: string;
@@ -56,7 +30,17 @@ const TrainSchedule = () => {
   const [selectedSchedule, setSelectedSchedule] =
     useState<TrainSchedule | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [language, setLanguage] = useState<"vi" | "en">("vi");
+  const [language, setLanguage] = useState<"vi" | "en">("vi")
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (selectedDirection) {
+        const data = await getScheduleByDirection(selectedDirection)
+        console.log(data)
+      }
+    }
+    fetchData()
+  }, [selectedDirection])
 
   // Mock data for stations
   const stations: Station[] = [
