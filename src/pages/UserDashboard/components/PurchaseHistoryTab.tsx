@@ -48,50 +48,56 @@ const PurchaseHistoryTab: React.FC<PurchaseHistoryTabProps> = ({
     </CardHeader>
     <CardContent>
       <ScrollArea className="h-[400px]">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Mã giao dịch</TableHead>
-              <TableHead>Ngày</TableHead>
-              <TableHead>Loại vé</TableHead>
-              <TableHead>Tuyến</TableHead>
-              <TableHead>Số tiền</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {purchaseHistory.map((item) => (
-              <TableRow key={item._id}>
-                <TableCell className="font-medium">
-                  {item.transaction_id || item._id}
-                </TableCell>
-                <TableCell>
-                  {item.createdAt
-                    ? new Date(item.createdAt).toLocaleString("vi-VN")
-                    : "-"}
-                </TableCell>
-                <TableCell>{item.ticket_type?.name || "-"}</TableCell>
-                <TableCell>
-                  {item.start_station_name && item.end_station_name
-                    ? `${item.start_station_name} - ${item.end_station_name}`
-                    : "-"}
-                </TableCell>
-                <TableCell>
-                  {item.ticket_type?.base_price !== undefined
-                    ? item.ticket_type.base_price.toLocaleString() + " VND"
-                    : "-"}
-                </TableCell>
-                <TableCell>{item.status}</TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+        {purchaseHistory.length === 0 ? (
+          <div className="text-center text-muted-foreground py-10">
+            Không có vé nào
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Mã giao dịch</TableHead>
+                <TableHead>Ngày</TableHead>
+                <TableHead>Loại vé</TableHead>
+                <TableHead>Tuyến</TableHead>
+                <TableHead>Số tiền</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {purchaseHistory.map((item) => (
+                <TableRow key={item._id}>
+                  <TableCell className="font-medium">
+                    {item.transaction_id || item._id}
+                  </TableCell>
+                  <TableCell>
+                    {item.createdAt
+                      ? new Date(item.createdAt).toLocaleString("vi-VN")
+                      : "-"}
+                  </TableCell>
+                  <TableCell>{item.ticket_type?.name || "-"}</TableCell>
+                  <TableCell>
+                    {item.start_station_name && item.end_station_name
+                      ? `${item.start_station_name} - ${item.end_station_name}`
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {item.ticket_type?.base_price !== undefined
+                      ? item.ticket_type.base_price.toLocaleString() + " VND"
+                      : "-"}
+                  </TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="sm">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </ScrollArea>
     </CardContent>
     <CardFooter>

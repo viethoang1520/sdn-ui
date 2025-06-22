@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserProfileCard from "./components/UserProfileCard";
 import AccountInfoTab from "./components/AccountInfoTab";
@@ -86,7 +87,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   }>({ type: null, message: "" });
   const [apiPurchaseHistory, setApiPurchaseHistory] = useState<any[]>([]);
   const [apiActiveTickets, setApiActiveTickets] = useState<TicketItem[]>([]);
-  const userId = "68512e5c26d4cb6370bb5d7d"; // TODO: Lấy userId thực tế từ context/auth
+  const navigate = useNavigate();
+  // Lấy userId từ localStorage
+  const userId = localStorage.getItem("userId") || "";
 
   const priorityGroups = [
     { value: "student", label: "Sinh viên", discount: "50%" },
@@ -98,6 +101,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     },
     { value: "veteran", label: "Cựu chiến binh", discount: "100%" },
   ];
+
+  useEffect(() => {
+    if (!userId) {
+      navigate("/auth");
+    }
+  }, [navigate, userId]);
 
   useEffect(() => {
     fetch(`http://localhost:3000/ticket/user/${userId}`)
@@ -163,9 +172,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-    if (exemptionForm.priorityGroup == 'student') {
-      const response = await applyStudentDiscount(exemptionForm)
-      if (response.error_code != 0) { 
+    if (exemptionForm.priorityGroup == "student") {
+      const response = await applyStudentDiscount(exemptionForm);
+      if (response.error_code != 0) {
         setExemptionStatus({
           type: "error",
           message: response.message,
@@ -173,8 +182,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         return;
       }
     } else {
-      const response = await applyFreeDiscount(exemptionForm)
-      if (response.error_code != 0) { 
+      const response = await applyFreeDiscount(exemptionForm);
+      if (response.error_code != 0) {
         setExemptionStatus({
           type: "error",
           message: response.message,
