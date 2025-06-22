@@ -14,9 +14,9 @@ export const login = async (loginData) => {
 
 export const register = async (registerData) => {
   try {
-    const { username, password, fullname } = registerData
+    const { username, password, fullName } = registerData
     const data = await axios.post('http://localhost:3000/register/validate', {
-      username, password, fullname
+      username, password, full_name: fullName
     })
     return data
   } catch (error) {
