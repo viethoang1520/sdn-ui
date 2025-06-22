@@ -6,6 +6,7 @@ import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import ActiveTicketsTab from "./components/ActiveTicketsTab";
 import QRCodeDialog from "./components/QRCodeDialog";
 import ExemptionDialog from "./components/ExemptionDialog";
+import { applyFreeDiscount, applyStudentDiscount } from "@/apis/exemption";
 
 interface UserDashboardProps {
   user?: {
@@ -96,9 +97,13 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
-  const [exemptionForm, setExemptionForm] = useState({
+  const [exemptionForm, setExemptionForm] = useState<{
+    priorityGroup: string;
+    documents: File[];
+    validTo?: { month: string; year: string };
+  }>({
     priorityGroup: "",
-    documents: [] as File[],
+    documents: [],
   });
   const [exemptionStatus, setExemptionStatus] = useState<{
     type: "success" | "error" | null;
@@ -106,14 +111,14 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   }>({ type: null, message: "" });
 
   const priorityGroups = [
-    { value: "student", label: "Sinh viên (giảm 50%)", discount: "50%" },
-    { value: "child", label: "Trẻ dưới 6 tuổi (miễn phí)", discount: "100%" },
+    { value: "student", label: "Sinh viên", discount: "50%" },
+    { value: "child", label: "Trẻ dưới 6 tuổi", discount: "100%" },
     {
       value: "senior",
-      label: "Người trên 60 tuổi (miễn phí)",
+      label: "Người trên 60 tuổi",
       discount: "100%",
     },
-    { value: "veteran", label: "Cựu chiến binh (miễn phí)", discount: "100%" },
+    { value: "veteran", label: "Cựu chiến binh", discount: "100%" },
   ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,7 +142,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     }));
   };
 
-  const handleExemptionSubmit = () => {
+  const handleExemptionSubmit = async () => {
     if (!exemptionForm.priorityGroup || exemptionForm.documents.length === 0) {
       setExemptionStatus({
         type: "error",
@@ -145,26 +150,37 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-
-    // Simulate API call
-    setTimeout(() => {
-      setExemptionStatus({
-        type: "success",
-        message:
-          "Đơn xin miễn/giảm vé đã được nộp thành công. Chúng tôi sẽ xem xét và phản hồi trong vòng 3-5 ngày làm việc.",
-      });
-
-      // Reset form after successful submission
-      setTimeout(() => {
-        setExemptionForm({ priorityGroup: "", documents: [] });
-        setExemptionStatus({ type: null, message: "" });
-        setShowExemptionDialog(false);
-      }, 3000);
-    }, 1000);
+    if (exemptionForm.priorityGroup == 'student') {
+      const response = await applyStudentDiscount(exemptionForm)
+      if (response.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+    } else {
+      const response = await applyFreeDiscount(exemptionForm)
+      if (response.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+    }
+    setExemptionStatus({
+      type: "success",
+      message:
+        "Đơn xin miễn/giảm vé đã được nộp thành công. Chúng tôi sẽ xem xét và phản hồi trong vòng 3-5 ngày làm việc.",
+    });
+    setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
+    setExemptionStatus({ type: null, message: "" });
+    setShowExemptionDialog(false);
   };
 
   const isFormValid =
-    exemptionForm.priorityGroup && exemptionForm.documents.length > 0;
+    exemptionForm.priorityGroup != "" && exemptionForm.documents.length > 0;
 
   return (
     <div className="mt-8">
