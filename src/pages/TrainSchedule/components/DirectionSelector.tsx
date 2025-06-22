@@ -1,12 +1,18 @@
-import React from "react";
-import { ArrowRight } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ArrowRight } from "lucide-react"
+import React from "react"
+
+interface DirectionSelectorTranslations {
+  selectDirection: string
+  benThanhToSuoiTien: string
+  suoiTienToBenThanh: string
+}
 
 interface DirectionSelectorProps {
-  t: any;
-  selectedDirection: string;
-  setSelectedDirection: (value: string) => void;
+  t: DirectionSelectorTranslations
+  selectedDirection: string
+  setSelectedDirection: (value: string) => void
 }
 
 const DirectionSelector: React.FC<DirectionSelectorProps> = ({ t, selectedDirection, setSelectedDirection }) => (
@@ -23,12 +29,12 @@ const DirectionSelector: React.FC<DirectionSelectorProps> = ({ t, selectedDirect
           <SelectValue placeholder={t.selectDirection} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ben-thanh-to-suoi-tien">{t.benThanhToSuoiTien}</SelectItem>
-          <SelectItem value="suoi-tien-to-ben-thanh">{t.suoiTienToBenThanh}</SelectItem>
+          <SelectItem value="Bến Thành - Suối Tiên">{t.benThanhToSuoiTien}</SelectItem>
+          <SelectItem value="Suối Tiên - Bến Thành">{t.suoiTienToBenThanh}</SelectItem>
         </SelectContent>
       </Select>
     </CardContent>
   </Card>
-);
+)
 
-export default DirectionSelector; 
+export default DirectionSelector
