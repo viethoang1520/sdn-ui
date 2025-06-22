@@ -13,6 +13,9 @@ import SocialLogin from "./components/SocialLogin";
 import { login, register } from "@/apis/authentication";
 import { useNavigate } from "react-router";
 import { useUserStore } from "@/store/userStore";
+import { Label } from "../../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { motion } from "framer-motion";
 
 const AuthPage = () => {
   const setUser = useUserStore((state:any) => state.setUser)
