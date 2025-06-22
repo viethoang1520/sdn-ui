@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import DepartureTimes from "./components/DepartureTimes";
 import DirectionSelector from "./components/DirectionSelector";
 import ScheduleDetailsDialog from "./components/ScheduleDetailsDialog";
-import { getScheduleByDirection } from "@/apis/schedule";
+import { getScheduleByDirection, getScheduleByStartTime } from "@/apis/schedule";
 
 interface Station {
   id: string;
@@ -15,28 +15,20 @@ interface Station {
   nameEn: string;
 }
 
-interface ScheduleEntry {
-  stationId: string;
-  arrivalTime: string;
-}
-
-interface TrainSchedule {
-  departureTime: string;
-  stations: ScheduleEntry[];
-}
-
 const TrainSchedule = () => {
-  const [selectedDirection, setSelectedDirection] = useState<string>("");
-  const [selectedSchedule, setSelectedSchedule] =
-    useState<TrainSchedule | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedDirection, setSelectedDirection] = useState<string>("")
+  const [scheduleData, setScheduleData] = useState([])
+  const [selectedSchedule, setSelectedSchedule] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [language, setLanguage] = useState<"vi" | "en">("vi")
 
   useEffect(() => {
     const fetchData = async () => {
       if (selectedDirection) {
-        const data = await getScheduleByDirection(selectedDirection)
-        console.log(data)
+        const { data } = await getScheduleByDirection(selectedDirection)
+        if (data.errorCode == 0) {
+          setScheduleData(data.route)
+        }
       }
     }
     fetchData()
@@ -59,128 +51,6 @@ const TrainSchedule = () => {
     { id: "long-binh", name: "Long Bình", nameEn: "Long Binh" },
     { id: "suoi-tien", name: "Suối Tiên", nameEn: "Suoi Tien" },
   ];
-
-  // Mock schedule data
-  const scheduleData = {
-    "ben-thanh-to-suoi-tien": [
-      {
-        departureTime: "05:30",
-        stations: [
-          { stationId: "bt", arrivalTime: "05:30" },
-          { stationId: "nha-hat", arrivalTime: "05:33" },
-          { stationId: "ba-son", arrivalTime: "05:36" },
-          { stationId: "van-thanh", arrivalTime: "05:39" },
-          { stationId: "tan-cang", arrivalTime: "05:42" },
-          { stationId: "thu-thiem", arrivalTime: "05:45" },
-          { stationId: "an-phu", arrivalTime: "05:48" },
-          { stationId: "rach-chiec", arrivalTime: "05:51" },
-          { stationId: "phuoc-long", arrivalTime: "05:54" },
-          { stationId: "binh-thai", arrivalTime: "05:57" },
-          { stationId: "truong-tho", arrivalTime: "06:00" },
-          { stationId: "hiep-phu", arrivalTime: "06:03" },
-          { stationId: "long-binh", arrivalTime: "06:06" },
-          { stationId: "suoi-tien", arrivalTime: "06:10" },
-        ],
-      },
-      {
-        departureTime: "05:45",
-        stations: [
-          { stationId: "bt", arrivalTime: "05:45" },
-          { stationId: "nha-hat", arrivalTime: "05:48" },
-          { stationId: "ba-son", arrivalTime: "05:51" },
-          { stationId: "van-thanh", arrivalTime: "05:54" },
-          { stationId: "tan-cang", arrivalTime: "05:57" },
-          { stationId: "thu-thiem", arrivalTime: "06:00" },
-          { stationId: "an-phu", arrivalTime: "06:03" },
-          { stationId: "rach-chiec", arrivalTime: "06:06" },
-          { stationId: "phuoc-long", arrivalTime: "06:09" },
-          { stationId: "binh-thai", arrivalTime: "06:12" },
-          { stationId: "truong-tho", arrivalTime: "06:15" },
-          { stationId: "hiep-phu", arrivalTime: "06:18" },
-          { stationId: "long-binh", arrivalTime: "06:21" },
-          { stationId: "suoi-tien", arrivalTime: "06:25" },
-        ],
-      },
-      {
-        departureTime: "06:00",
-        stations: [
-          { stationId: "bt", arrivalTime: "06:00" },
-          { stationId: "nha-hat", arrivalTime: "06:03" },
-          { stationId: "ba-son", arrivalTime: "06:06" },
-          { stationId: "van-thanh", arrivalTime: "06:09" },
-          { stationId: "tan-cang", arrivalTime: "06:12" },
-          { stationId: "thu-thiem", arrivalTime: "06:15" },
-          { stationId: "an-phu", arrivalTime: "06:18" },
-          { stationId: "rach-chiec", arrivalTime: "06:21" },
-          { stationId: "phuoc-long", arrivalTime: "06:24" },
-          { stationId: "binh-thai", arrivalTime: "06:27" },
-          { stationId: "truong-tho", arrivalTime: "06:30" },
-          { stationId: "hiep-phu", arrivalTime: "06:33" },
-          { stationId: "long-binh", arrivalTime: "06:36" },
-          { stationId: "suoi-tien", arrivalTime: "06:40" },
-        ],
-      },
-    ],
-    "suoi-tien-to-ben-thanh": [
-      {
-        departureTime: "05:30",
-        stations: [
-          { stationId: "suoi-tien", arrivalTime: "05:30" },
-          { stationId: "long-binh", arrivalTime: "05:34" },
-          { stationId: "hiep-phu", arrivalTime: "05:37" },
-          { stationId: "truong-tho", arrivalTime: "05:40" },
-          { stationId: "binh-thai", arrivalTime: "05:43" },
-          { stationId: "phuoc-long", arrivalTime: "05:46" },
-          { stationId: "rach-chiec", arrivalTime: "05:49" },
-          { stationId: "an-phu", arrivalTime: "05:52" },
-          { stationId: "thu-thiem", arrivalTime: "05:55" },
-          { stationId: "tan-cang", arrivalTime: "05:58" },
-          { stationId: "van-thanh", arrivalTime: "06:01" },
-          { stationId: "ba-son", arrivalTime: "06:04" },
-          { stationId: "nha-hat", arrivalTime: "06:07" },
-          { stationId: "bt", arrivalTime: "06:10" },
-        ],
-      },
-      {
-        departureTime: "05:45",
-        stations: [
-          { stationId: "suoi-tien", arrivalTime: "05:45" },
-          { stationId: "long-binh", arrivalTime: "05:49" },
-          { stationId: "hiep-phu", arrivalTime: "05:52" },
-          { stationId: "truong-tho", arrivalTime: "05:55" },
-          { stationId: "binh-thai", arrivalTime: "05:58" },
-          { stationId: "phuoc-long", arrivalTime: "06:01" },
-          { stationId: "rach-chiec", arrivalTime: "06:04" },
-          { stationId: "an-phu", arrivalTime: "06:07" },
-          { stationId: "thu-thiem", arrivalTime: "06:10" },
-          { stationId: "tan-cang", arrivalTime: "06:13" },
-          { stationId: "van-thanh", arrivalTime: "06:16" },
-          { stationId: "ba-son", arrivalTime: "06:19" },
-          { stationId: "nha-hat", arrivalTime: "06:22" },
-          { stationId: "bt", arrivalTime: "06:25" },
-        ],
-      },
-      {
-        departureTime: "06:00",
-        stations: [
-          { stationId: "suoi-tien", arrivalTime: "06:00" },
-          { stationId: "long-binh", arrivalTime: "06:04" },
-          { stationId: "hiep-phu", arrivalTime: "06:07" },
-          { stationId: "truong-tho", arrivalTime: "06:10" },
-          { stationId: "binh-thai", arrivalTime: "06:13" },
-          { stationId: "phuoc-long", arrivalTime: "06:16" },
-          { stationId: "rach-chiec", arrivalTime: "06:19" },
-          { stationId: "an-phu", arrivalTime: "06:22" },
-          { stationId: "thu-thiem", arrivalTime: "06:25" },
-          { stationId: "tan-cang", arrivalTime: "06:28" },
-          { stationId: "van-thanh", arrivalTime: "06:31" },
-          { stationId: "ba-son", arrivalTime: "06:34" },
-          { stationId: "nha-hat", arrivalTime: "06:37" },
-          { stationId: "bt", arrivalTime: "06:40" },
-        ],
-      },
-    ],
-  };
 
   const translations = {
     vi: {
@@ -226,15 +96,15 @@ const TrainSchedule = () => {
       : stationId;
   };
 
-  const getCurrentSchedules = () => {
-    if (!selectedDirection) return [];
-    return scheduleData[selectedDirection as keyof typeof scheduleData] || [];
-  };
-
-  const handleTimeClick = (schedule: TrainSchedule) => {
-    setSelectedSchedule(schedule);
-    setIsDialogOpen(true);
-  };
+  const handleTimeClick = (schedule) => {
+    const fetchData = async () => {
+      const { data } = await getScheduleByStartTime(selectedDirection, schedule)
+      console.log(data)
+      setSelectedSchedule(data.arrivalTimeList)
+    }
+    fetchData()
+    setIsDialogOpen(true)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -261,7 +131,7 @@ const TrainSchedule = () => {
         {selectedDirection ? (
           <DepartureTimes
             t={t}
-            schedules={getCurrentSchedules()}
+            schedules={scheduleData}
             handleTimeClick={handleTimeClick}
           />
         ) : (
@@ -282,7 +152,7 @@ const TrainSchedule = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TrainSchedule;
+export default TrainSchedule
