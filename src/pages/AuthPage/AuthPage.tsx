@@ -66,16 +66,15 @@ const AuthPage = () => {
     }
     const response = await register(registerData)
     const data = response.data
-    const token = data.token
-    if (token) {
-      localStorage.setItem('token', token)
-      // console.log("Register token:", localStorage.getItem('token'));
+    const error_code = data.error_code
+    if (error_code === 0) {
+      alert(response.data.message)
       setIsLoading(false);
       navigate('/')
     } else {
       alert(response.data.message)
+      setIsLoading(false);
     }
-   
   };
 
   const handleGoogleLogin = () => {
