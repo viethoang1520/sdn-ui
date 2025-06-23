@@ -130,7 +130,7 @@ const Tickets: React.FC = () => {
   const [stations, setStations] = useState<Station[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/station/stations")
+    fetch("http://localhost:3000/station/stations")
       .then(res => res.json())
       .then(data => setStations(data));
   }, []);
@@ -302,6 +302,13 @@ const Tickets: React.FC = () => {
     return selectedTicketType && originStation && destinationStation && quantity > 0;
   };
 
+  const canShowPaymentMethods = () => {
+    if (selectedTicketType === "single-trip") {
+      return selectedTicketType && originStation && destinationStation && quantity > 0;
+    }
+    return selectedTicketType && quantity > 0;
+  };
+
   const handlePurchase = async () => {
     try {
       const userId = localStorage.getItem('userId') || '68512e5c26d4cb6370bb5d7d';
@@ -332,9 +339,8 @@ const Tickets: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-20 pb-20">
+      <div className="container mx-auto px-2">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -454,7 +460,7 @@ const Tickets: React.FC = () => {
             </motion.div>
 
             {/* Station Selection */}
-            {selectedTicketType && (
+            {selectedTicketType === "single-trip" && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -463,7 +469,6 @@ const Tickets: React.FC = () => {
                 <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                   {t[language].selectStations}
                 </h2>
-
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="origin">{t[language].originStation}</Label>
@@ -487,7 +492,6 @@ const Tickets: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="destination">{t[language].destinationStation}</Label>
                     <Select value={destinationStation} onValueChange={setDestinationStation}>
@@ -511,7 +515,6 @@ const Tickets: React.FC = () => {
                     </Select>
                   </div>
                 </div>
-
                 {/* Fare Information */}
                 {originStation && destinationStation && (
                   <motion.div
@@ -533,7 +536,7 @@ const Tickets: React.FC = () => {
             )}
 
             {/* Payment Methods */}
-            {canProceedToPayment() && (
+            {canShowPaymentMethods() && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
