@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserProfileCard from "./components/UserProfileCard";
 import AccountInfoTab from "./components/AccountInfoTab";
@@ -6,6 +7,7 @@ import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import ActiveTicketsTab from "./components/ActiveTicketsTab";
 import QRCodeDialog from "./components/QRCodeDialog";
 import ExemptionDialog from "./components/ExemptionDialog";
+import { applyFreeDiscount, applyStudentDiscount } from "@/apis/exemption";
 
 interface UserDashboardProps {
   user?: {
@@ -38,6 +40,28 @@ interface TicketItem {
   qrCode: string;
 }
 
+interface QRCodeTicketItem {
+  id: string;
+  type: string;
+  validFrom: string;
+  validTo: string;
+  stations: string;
+  qrCode: string;
+}
+
+// Import hoặc định nghĩa lại interface ActiveTicketItem cho đúng file
+interface ActiveTicketItem {
+  id: string;
+  transactionId: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  expiryDate?: string;
+  basePrice: number;
+  startStation?: string | null;
+  endStation?: string | null;
+}
+
 const UserDashboard: React.FC<UserDashboardProps> = ({
   user = {
     name: "Nguyễn Văn A",
@@ -47,32 +71,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     cccdNumber: "079123456789",
     priorityStatus: "Sinh viên",
   },
-  purchaseHistory = [
-    {
-      id: "TX-12345",
-      date: "15/05/2023",
-      ticketType: "Vé tháng",
-      stations: "Bến Thành - Suối Tiên",
-      amount: "150.000 VND",
-      paymentMethod: "MoMo",
-    },
-    {
-      id: "TX-12344",
-      date: "14/04/2023",
-      ticketType: "Vé ngày",
-      stations: "Bến Thành - Thảo Điền",
-      amount: "40.000 VND",
-      paymentMethod: "Napas",
-    },
-    {
-      id: "TX-12343",
-      date: "10/04/2023",
-      ticketType: "Vé đơn",
-      stations: "Bến Thành - Bình Thái",
-      amount: "12.000 VND",
-      paymentMethod: "Visa",
-    },
-  ],
+  purchaseHistory = [],
   activeTickets = [
     {
       id: "TK-67890",
@@ -93,35 +92,89 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   ],
 }) => {
   const [activeTab, setActiveTab] = useState("account");
-  const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<QRCodeTicketItem | null>(
+    null
+  );
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
-  const [exemptionForm, setExemptionForm] = useState({
+  const [exemptionForm, setExemptionForm] = useState<{
+    priorityGroup: string;
+    documents: File[];
+    validTo?: { month: string; year: string };
+  }>({
     priorityGroup: "",
-    documents: [] as File[],
+    documents: [],
   });
   const [exemptionStatus, setExemptionStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [apiPurchaseHistory, setApiPurchaseHistory] = useState<any[]>([]);
+  const [apiActiveTickets, setApiActiveTickets] = useState<ActiveTicketItem[]>(
+    []
+  );
+  const navigate = useNavigate();
+  // Lấy userId từ localStorage
+  const userId = localStorage.getItem("userId") || "68512e5c26d4cb6370bb5d7d";
 
   const priorityGroups = [
-    { value: "student", label: "Sinh viên (giảm 50%)", discount: "50%" },
-    { value: "child", label: "Trẻ dưới 6 tuổi (miễn phí)", discount: "100%" },
+    { value: "student", label: "Sinh viên", discount: "50%" },
+    { value: "child", label: "Trẻ dưới 6 tuổi", discount: "100%" },
     {
       value: "senior",
-      label: "Người trên 60 tuổi (miễn phí)",
+      label: "Người trên 60 tuổi",
       discount: "100%",
     },
-    { value: "veteran", label: "Cựu chiến binh (miễn phí)", discount: "100%" },
+    { value: "veteran", label: "Cựu chiến binh", discount: "100%" },
   ];
+
+  useEffect(() => {
+    if (!userId) {
+      navigate("/auth");
+    }
+  }, [navigate, userId]);
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/ticket/user/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          setApiPurchaseHistory(data.data);
+        }
+      })
+      .catch((err) => {
+        setApiPurchaseHistory([]);
+      });
+  }, [userId]);
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/ticket/active/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          const mapped = data.data.map((item: any) => ({
+            id: item._id,
+            transactionId: item.transaction_id,
+            type: item.ticket_type?.name || "Không xác định",
+            status: item.status,
+            createdAt: item.createdAt,
+            expiryDate: item.ticket_type?.expiry_date,
+            basePrice: item.ticket_type?.base_price ?? 0,
+            startStation: item.start_station_name,
+            endStation: item.end_station_name,
+          }));
+          setApiActiveTickets(mapped);
+        }
+      })
+      .catch(() => setApiActiveTickets([]));
+  }, [userId]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files).filter(
         (file) =>
-          file.type.startsWith("image/") || file.type === "application/pdf",
+          file.type.startsWith("image/") || file.type === "application/pdf"
       );
       setExemptionForm((prev) => ({
         ...prev,
@@ -137,7 +190,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     }));
   };
 
-  const handleExemptionSubmit = () => {
+  const handleExemptionSubmit = async () => {
     if (!exemptionForm.priorityGroup || exemptionForm.documents.length === 0) {
       setExemptionStatus({
         type: "error",
@@ -145,26 +198,40 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-
-    // Simulate API call
-    setTimeout(() => {
-      setExemptionStatus({
-        type: "success",
-        message:
-          "Đơn xin miễn/giảm vé đã được nộp thành công. Chúng tôi sẽ xem xét và phản hồi trong vòng 3-5 ngày làm việc.",
-      });
-
-      // Reset form after successful submission
-      setTimeout(() => {
-        setExemptionForm({ priorityGroup: "", documents: [] });
-        setExemptionStatus({ type: null, message: "" });
-        setShowExemptionDialog(false);
-      }, 3000);
-    }, 1000);
+    if (exemptionForm.priorityGroup == 'student') {
+      const {data} = await applyStudentDiscount(exemptionForm)
+      console.log(data)
+      if (data.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: data.message,
+        });
+        return;
+      }
+    } else {
+      const {data} = await applyFreeDiscount(exemptionForm)
+      console.log(data)
+      if (data.error_code != 0) { 
+        setExemptionStatus({
+          type: "error",
+          message: data.message,
+        });
+        return;
+      }
+    }
+    setExemptionStatus({
+      type: "success",
+      message:
+        "Đơn xin miễn/giảm vé đã được nộp thành công. Chúng tôi sẽ xem xét và phản hồi trong vòng 3-5 ngày làm việc.",
+    });
+    setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
+    setExemptionStatus({ type: null, message: "" });
+    setShowExemptionDialog(false);
+    alert("Đơn đã gửi thành công");
   };
 
   const isFormValid =
-    exemptionForm.priorityGroup && exemptionForm.documents.length > 0;
+    exemptionForm.priorityGroup != "" && exemptionForm.documents.length > 0;
 
   return (
     <div className="mt-8">
@@ -192,13 +259,29 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <AccountInfoTab user={user} />
               </TabsContent>
               <TabsContent value="history" className="mt-6">
-                <PurchaseHistoryTab purchaseHistory={purchaseHistory} />
+                <PurchaseHistoryTab purchaseHistory={apiPurchaseHistory} />
               </TabsContent>
               <TabsContent value="tickets" className="mt-6">
                 <ActiveTicketsTab
-                  activeTickets={activeTickets}
+                  activeTickets={apiActiveTickets}
                   onShowQR={(ticket) => {
-                    setSelectedTicket(ticket);
+                    setSelectedTicket({
+                      id: ticket.id,
+                      type: ticket.type,
+                      validFrom: ticket.createdAt
+                        ? new Date(ticket.createdAt).toLocaleDateString("vi-VN")
+                        : "-",
+                      validTo: ticket.expiryDate
+                        ? new Date(ticket.expiryDate).toLocaleDateString(
+                            "vi-VN"
+                          )
+                        : "-",
+                      stations:
+                        ticket.startStation && ticket.endStation
+                          ? `${ticket.startStation} - ${ticket.endStation}`
+                          : ticket.type,
+                      qrCode: ticket.transactionId || "",
+                    });
                     setShowQRDialog(true);
                   }}
                 />

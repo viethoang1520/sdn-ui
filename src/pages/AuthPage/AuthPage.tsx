@@ -12,8 +12,13 @@ import RegisterForm from "./components/RegisterForm";
 import SocialLogin from "./components/SocialLogin";
 import { login, register } from "@/apis/authentication";
 import { useNavigate } from "react-router";
+import { useUserStore } from "@/store/userStore";
+import { Label } from "../../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { motion } from "framer-motion";
 
 const AuthPage = () => {
+  const setUser = useUserStore((state:any) => state.setUser)
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -39,14 +44,17 @@ const AuthPage = () => {
     setIsLoading(true);
     const response = await login(loginData)
     const token = response.data.token
+    const fullName = response.data.full_name
+
     console.log(response)
     if (token) {
       localStorage.setItem('token', token)
-      console.log("Login token:", localStorage.getItem('token'));
+      setUser({fullName})
       setIsLoading(false);
       navigate('/')
     } else {
       alert(response.data.message)
+      setIsLoading(false);
     }
   };
 
@@ -61,16 +69,15 @@ const AuthPage = () => {
     }
     const response = await register(registerData)
     const data = response.data
-    const token = data.token
-    if (token) {
-      localStorage.setItem('token', token)
-      console.log("Register token:", localStorage.getItem('token'));
+    const error_code = data.error_code
+    if (error_code === 0) {
+      alert(response.data.message)
       setIsLoading(false);
       navigate('/')
     } else {
       alert(response.data.message)
+      setIsLoading(false);
     }
-   
   };
 
   const handleGoogleLogin = () => {
