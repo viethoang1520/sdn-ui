@@ -322,6 +322,8 @@ const Tickets: React.FC = () => {
             ? 'month_student'
             : 'month_adult';
       }
+      const endpoint = `${import.meta.env.VITE_API_URL}/purchase/ticket`;
+      console.log("Endpoint FE đang gọi:", endpoint, "Payload:", payload);
       const result = await purchaseTicket(payload);
       alert('Mua vé thành công!');
     } catch (err: any) {
@@ -331,7 +333,7 @@ const Tickets: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header removed */}
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
