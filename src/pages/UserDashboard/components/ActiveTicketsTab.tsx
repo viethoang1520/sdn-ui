@@ -18,7 +18,7 @@ interface TicketType {
   base_price: number;
 }
 
-interface TicketItem {
+interface ActiveTicketItem {
   id: string;
   transactionId: string;
   type: string;
@@ -31,8 +31,8 @@ interface TicketItem {
 }
 
 interface ActiveTicketsTabProps {
-  activeTickets: TicketItem[];
-  onShowQR: (ticket: TicketItem) => void;
+  activeTickets: ActiveTicketItem[];
+  onShowQR: (ticket: ActiveTicketItem) => void;
 }
 
 const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({

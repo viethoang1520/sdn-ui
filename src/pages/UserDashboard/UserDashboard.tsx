@@ -49,6 +49,19 @@ interface QRCodeTicketItem {
   qrCode: string;
 }
 
+// Import hoặc định nghĩa lại interface ActiveTicketItem cho đúng file
+interface ActiveTicketItem {
+  id: string;
+  transactionId: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  expiryDate?: string;
+  basePrice: number;
+  startStation?: string | null;
+  endStation?: string | null;
+}
+
 const UserDashboard: React.FC<UserDashboardProps> = ({
   user = {
     name: "Nguyễn Văn A",
@@ -97,7 +110,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     message: string;
   }>({ type: null, message: "" });
   const [apiPurchaseHistory, setApiPurchaseHistory] = useState<any[]>([]);
-  const [apiActiveTickets, setApiActiveTickets] = useState<TicketItem[]>([]);
+  const [apiActiveTickets, setApiActiveTickets] = useState<ActiveTicketItem[]>(
+    []
+  );
   const navigate = useNavigate();
   // Lấy userId từ localStorage
   const userId = localStorage.getItem("userId") || "68512e5c26d4cb6370bb5d7d";
@@ -183,10 +198,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-    if (exemptionForm.priorityGroup == 'student') {
-      const response = await applyStudentDiscount(exemptionForm)
-      console.log(response)
-      if (response.error_code != 0) { 
+    if (exemptionForm.priorityGroup == "student") {
+      const response = await applyStudentDiscount(exemptionForm);
+      console.log(response);
+      if (response.error_code != 0) {
         setExemptionStatus({
           type: "error",
           message: response.message,
@@ -194,9 +209,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         return;
       }
     } else {
-      const response = await applyFreeDiscount(exemptionForm)
-      console.log(response)
-      if (response.error_code != 0) { 
+      const response = await applyFreeDiscount(exemptionForm);
+      console.log(response);
+      if (response.error_code != 0) {
         setExemptionStatus({
           type: "error",
           message: response.message,
@@ -212,7 +227,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
-    alert('Đơn đã gửi thành công')
+    alert("Đơn đã gửi thành công");
   };
 
   const isFormValid =
