@@ -3,7 +3,6 @@ import axiosClient from "./axiosClient";
 
 export const applyStudentDiscount = async (exemptionForm: any): Promise<{error_code: number, message: string}> => {
   const { validTo } = exemptionForm;
-  const token = getToken()
   return await axiosClient.post('discount/student', {
     user_id: '684657ed0b397c8f35851eb0',
     discount: 50,
