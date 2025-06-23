@@ -40,6 +40,15 @@ interface TicketItem {
   qrCode: string;
 }
 
+interface QRCodeTicketItem {
+  id: string;
+  type: string;
+  validFrom: string;
+  validTo: string;
+  stations: string;
+  qrCode: string;
+}
+
 const UserDashboard: React.FC<UserDashboardProps> = ({
   user = {
     name: "Nguyễn Văn A",
@@ -70,7 +79,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   ],
 }) => {
   const [activeTab, setActiveTab] = useState("account");
-  const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<QRCodeTicketItem | null>(
+    null
+  );
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
   const [exemptionForm, setExemptionForm] = useState<{
@@ -89,7 +100,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [apiActiveTickets, setApiActiveTickets] = useState<TicketItem[]>([]);
   const navigate = useNavigate();
   // Lấy userId từ localStorage
-  const userId = localStorage.getItem("userId") || "";
+  const userId = localStorage.getItem("userId") || "68512e5c26d4cb6370bb5d7d";
 
   const priorityGroups = [
     { value: "student", label: "Sinh viên", discount: "50%" },
@@ -236,7 +247,23 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <ActiveTicketsTab
                   activeTickets={apiActiveTickets}
                   onShowQR={(ticket) => {
-                    setSelectedTicket(ticket);
+                    setSelectedTicket({
+                      id: ticket.id,
+                      type: ticket.type,
+                      validFrom: ticket.createdAt
+                        ? new Date(ticket.createdAt).toLocaleDateString("vi-VN")
+                        : "-",
+                      validTo: ticket.expiryDate
+                        ? new Date(ticket.expiryDate).toLocaleDateString(
+                            "vi-VN"
+                          )
+                        : "-",
+                      stations:
+                        ticket.startStation && ticket.endStation
+                          ? `${ticket.startStation} - ${ticket.endStation}`
+                          : ticket.type,
+                      qrCode: ticket.transactionId || "",
+                    });
                     setShowQRDialog(true);
                   }}
                 />
