@@ -183,9 +183,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-    if (exemptionForm.priorityGroup == "student") {
-      const response = await applyStudentDiscount(exemptionForm);
-      if (response.error_code != 0) {
+    if (exemptionForm.priorityGroup == 'student') {
+      const response = await applyStudentDiscount(exemptionForm)
+      console.log(response)
+      if (response.error_code != 0) { 
         setExemptionStatus({
           type: "error",
           message: response.message,
@@ -193,8 +194,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         return;
       }
     } else {
-      const response = await applyFreeDiscount(exemptionForm);
-      if (response.error_code != 0) {
+      const response = await applyFreeDiscount(exemptionForm)
+      console.log(response)
+      if (response.error_code != 0) { 
         setExemptionStatus({
           type: "error",
           message: response.message,
@@ -210,6 +212,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
+    alert('Đơn đã gửi thành công')
   };
 
   const isFormValid =

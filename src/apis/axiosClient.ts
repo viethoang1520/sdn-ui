@@ -18,7 +18,7 @@ axiosClient.interceptors.request.use(
 )
 
 axiosClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => response.data,
   (error: AxiosError) => {
     return Promise.reject(error)
   }
