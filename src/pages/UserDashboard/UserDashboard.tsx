@@ -198,23 +198,23 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       });
       return;
     }
-    if (exemptionForm.priorityGroup == "student") {
-      const response = await applyStudentDiscount(exemptionForm);
-      console.log(response);
-      if (response.error_code != 0) {
+    if (exemptionForm.priorityGroup == 'student') {
+      const {data} = await applyStudentDiscount(exemptionForm)
+      console.log(data)
+      if (data.error_code != 0) { 
         setExemptionStatus({
           type: "error",
-          message: response.message,
+          message: data.message,
         });
         return;
       }
     } else {
-      const response = await applyFreeDiscount(exemptionForm);
-      console.log(response);
-      if (response.error_code != 0) {
+      const {data} = await applyFreeDiscount(exemptionForm)
+      console.log(data)
+      if (data.error_code != 0) { 
         setExemptionStatus({
           type: "error",
-          message: response.message,
+          message: data.message,
         });
         return;
       }
