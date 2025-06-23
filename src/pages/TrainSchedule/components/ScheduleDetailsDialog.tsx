@@ -1,23 +1,14 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Train } from "lucide-react";
-
-interface ScheduleEntry {
-  stationId: string;
-  arrivalTime: string;
-}
-
-interface TrainSchedule {
-  departureTime: string;
-  stations: ScheduleEntry[];
-}
+import { Train } from "lucide-react"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 interface ScheduleDetailsDialogProps {
   t: any;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
-  selectedSchedule: TrainSchedule | null;
+  selectedSchedule: any;
   selectedDirection: string;
   getStationName: (stationId: string) => string;
 }
@@ -32,15 +23,20 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
 }) => (
   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogTitle asChild>
+        <VisuallyHidden>
+          {t.scheduleDetails}
+        </VisuallyHidden>
+      </DialogTitle>
       {selectedSchedule && (
         <>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Train className="h-5 w-5" />
-              {t.scheduleDetails} - {selectedSchedule.departureTime}
+              {t.scheduleDetails} - {selectedSchedule[0].arrivalTime}
             </DialogTitle>
             <DialogDescription>
-              {selectedDirection === "ben-thanh-to-suoi-tien"
+              {selectedDirection === "Bến Thành - Suối Tiên"
                 ? t.benThanhToSuoiTien
                 : t.suoiTienToBenThanh}
             </DialogDescription>
@@ -54,13 +50,13 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {selectedSchedule.stations.map((entry, stationIndex) => (
-                  <TableRow key={stationIndex}>
+                {selectedSchedule.map((station, index) => (
+                  <TableRow key={index}>
                     <TableCell className="font-medium">
-                      {getStationName(entry.stationId)}
+                      {station.station}
                     </TableCell>
                     <TableCell className="text-primary font-semibold">
-                      {entry.arrivalTime}
+                      {station.arrivalTime}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -71,6 +67,6 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
       )}
     </DialogContent>
   </Dialog>
-);
+)
 
-export default ScheduleDetailsDialog; 
+export default ScheduleDetailsDialog
