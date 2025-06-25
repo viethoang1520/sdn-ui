@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import UserDashboard from "./pages/UserDashboard/UserDashboard"
 import MainLayout from "./layouts/MainLayout"
 import AuthPage from "./pages/AuthPage/AuthPage"
-import Tickets from "./pages/UserDashboard/components/Tickets"
+import Tickets from "./pages/UserDashboard/Tickets"
 import TrainSchedule from "./pages/TrainSchedule/TrainSchedule"
 
 function App() {
