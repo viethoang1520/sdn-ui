@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { purchaseTicket } from "@/lib/api";
+import { getStations, purchaseTicket } from "@/lib/api";
 
 interface TicketType {
   id: string;
@@ -130,9 +130,7 @@ const Tickets: React.FC = () => {
   const [stations, setStations] = useState<Station[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/station/stations")
-      .then(res => res.json())
-      .then(data => setStations(data));
+    getStations().then(data => setStations(data));
   }, []);
 
   const paymentMethods: PaymentMethod[] = [
