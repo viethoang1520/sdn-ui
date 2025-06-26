@@ -7,6 +7,6 @@ export async function purchaseTicket(data: any) {
 }
 
 export async function getStations() {
-  const res = await axios.get(`${API_URL}/station/stations`);
+  const res = await axios.get(`${API_URL}/station`);
   return res.data;
 }
