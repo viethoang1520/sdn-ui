@@ -54,11 +54,11 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone">Số điện thoại</Label>
-            <Input id="phone" defaultValue='0332667829' disabled={activeEdit} onChange={(e) => setUserInformation({ ...userInformation, phone: e.target.value })} />
+            <Input id="phone" defaultValue='0332667829' disabled={activeEdit} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="cccd">Số CCCD</Label>
-            <Input id="cccd" defaultValue={user?.cccdNumber || ""} placeholder="Nhập số CCCD để liên kết" disabled={true} />
+            <Input id="cccd" defaultValue={""} placeholder="Nhập số CCCD để liên kết" disabled={true} />
           </div>
         </div>
         <Separator />
