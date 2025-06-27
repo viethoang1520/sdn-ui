@@ -1,37 +1,34 @@
-import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Ticket,
-  CreditCard,
-  QrCode,
-  CheckCircle,
   ArrowRight,
+  Calendar,
+  CheckCircle,
+  CreditCard,
+  Gift,
+  Info,
+  QrCode,
+  Shield,
+  Ticket,
   Train,
   Users,
-  Calendar,
-  Zap,
-  Shield,
-  Gift,
-  Globe,
-  Info,
+  Zap
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { purchaseTicket } from "@/lib/api";
+import { getStations } from "@/lib/api";
 
 interface TicketType {
   id: string;
@@ -125,15 +122,16 @@ const Tickets: React.FC = () => {
   const [destinationStation, setDestinationStation] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
-  const [showPaymentMethods, setShowPaymentMethods] = useState<boolean>(false);
   const [category, setCategory] = useState<string>("adult");
   const [stations, setStations] = useState<Station[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/station/stations")
-      .then(res => res.json())
-      .then(data => setStations(data));
-  }, []);
+    const fetchData = async () => {
+      const data = await getStations()
+      setStations(data)
+    }
+    fetchData()
+  }, [])
 
   const paymentMethods: PaymentMethod[] = [
     {
@@ -331,9 +329,8 @@ const Tickets: React.FC = () => {
       }
       const endpoint = `${import.meta.env.VITE_API_URL}/purchase/ticket`;
       console.log("Endpoint FE đang gọi:", endpoint, "Payload:", payload);
-      const result = await purchaseTicket(payload);
       alert('Mua vé thành công!');
-    } catch (err: any) {
+    } catch (err) {
       alert('Có lỗi khi mua vé: ' + (err.response?.data?.message || err.message));
     }
   };
@@ -596,7 +593,7 @@ const Tickets: React.FC = () => {
                             {language === "vi" ? getSelectedTicket()?.name : getSelectedTicket()?.nameEn}
                           </span>
                           <span className="font-medium">
-                            {formatCurrency(typeof getSelectedTicket()?.price === 'number' ? getSelectedTicket()?.price! : 0)}
+                            {formatCurrency(typeof getSelectedTicket()?.price === 'number' ? getSelectedTicket()?.price ?? 0 : 0)}
                           </span>
                         </div>
 
