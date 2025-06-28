@@ -1,3 +1,4 @@
+import { getScheduleByDirection, getScheduleByStartTime } from "@/apis/schedule";
 import {
   Card,
   CardContent
@@ -7,7 +8,6 @@ import { useEffect, useState } from "react";
 import DepartureTimes from "./components/DepartureTimes";
 import DirectionSelector from "./components/DirectionSelector";
 import ScheduleDetailsDialog from "./components/ScheduleDetailsDialog";
-import { getScheduleByDirection, getScheduleByStartTime } from "@/apis/schedule";
 
 interface Station {
   id: string;
