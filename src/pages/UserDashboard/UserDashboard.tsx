@@ -1,19 +1,18 @@
 import { applyFreeDiscount, applyStudentDiscount } from "@/apis/exemption";
 import {
+  getUserActiveTickets,
   getUserInformation,
   getUserPurchaseHistory,
-  getUserActiveTickets,
 } from "@/apis/user";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserStore } from "@/store/userStore";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AccountInfoTab from "./components/AccountInfoTab";
 import ActiveTicketsTab from "./components/ActiveTicketsTab";
 import ExemptionDialog from "./components/ExemptionDialog";
 import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import QRCodeDialog from "./components/QRCodeDialog";
 import UserProfileCard from "./components/UserProfileCard";
-import { useUserStore } from "@/store/userStore";
 
 interface UserDashboardProps {
   user?: {
@@ -67,18 +66,14 @@ interface ActiveTicketItem {
   endStation?: string | null;
 }
 
-interface User {
-  full_name: string;
-  email: string;
-}
-
 const UserDashboard: React.FC<UserDashboardProps> = () => {
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
   const [activeEdit, setActiveEdit] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState("account");
   const [selectedTicket, setSelectedTicket] = useState<QRCodeTicketItem | null>(
     null
   );
-  const [user, setUser] = useState<User | null>(null);
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
   const [exemptionForm, setExemptionForm] = useState<{
@@ -97,9 +92,9 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
   const [apiActiveTickets, setApiActiveTickets] = useState<ActiveTicketItem[]>(
     []
   );
-  const navigate = useNavigate();
-const userId = useUserStore((state) => state.user._id)
-console.log(userId)
+  
+  const userId = user?._id
+
   const priorityGroups = [
     { value: "student", label: "Sinh viên", discount: "50%" },
     { value: "child", label: "Trẻ dưới 6 tuổi", discount: "100%" },
@@ -109,23 +104,17 @@ console.log(userId)
       discount: "100%",
     },
     { value: "veteran", label: "Cựu chiến binh", discount: "100%" },
-  ];
+  ]
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await getUserInformation();
+      const { data } = await getUserInformation()
       if (data.error_code === 0) {
-        setUser(data.user);
+        setUser(data.user)
       }
-    };
-    fetch();
-  }, []);
-
-  useEffect(() => {
-    if (!userId) {
-      navigate("/auth");
     }
-  }, [navigate, userId]);
+    fetch()
+  }, [])
 
   useEffect(() => {
     const fetchPurchaseHistory = async () => {
@@ -133,11 +122,11 @@ console.log(userId)
         const res = await getUserPurchaseHistory(userId);
         if (res && res.data && res.data.data) {
           setApiPurchaseHistory(res.data.data);
-          console.log(res.data.data);
         } else {
           setApiPurchaseHistory([]);
         }
       } catch (err) {
+        console.log(err)
         setApiPurchaseHistory([]);
       }
     };
@@ -148,9 +137,8 @@ console.log(userId)
     const fetchActiveTickets = async () => {
       try {
         const res = await getUserActiveTickets(userId);
-        console.log(11111)
         if (res && res.data && res.data.data) {
-          const mapped = res.data.data.map((item: any) => ({
+          const mapped = res.data.data.map((item) => ({
             id: item._id,
             transactionId: item.transaction_id,
             type: item.ticket_type?.name || "Không xác định",
