@@ -12,12 +12,6 @@ import { Button } from "@/components/ui/button";
 import { QrCode, Ticket } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-interface TicketType {
-  expiry_date?: string;
-  name: string;
-  base_price: number;
-}
-
 interface ActiveTicketItem {
   id: string;
   transactionId: string;
@@ -28,6 +22,7 @@ interface ActiveTicketItem {
   basePrice: number;
   startStation?: string | null;
   endStation?: string | null;
+  ticket_category?: string;
 }
 
 interface ActiveTicketsTabProps {
@@ -63,7 +58,7 @@ const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({
                     Tuyến: {ticket.startStation} - {ticket.endStation}
                   </CardDescription>
                 ) : (
-                  <CardDescription>Vé sử dụng: {ticket.type}</CardDescription>
+                    <CardDescription>Vé sử dụng: {ticket?.ticket_category}</CardDescription>
                 )}
               </CardHeader>
               <CardContent className="pt-4">
