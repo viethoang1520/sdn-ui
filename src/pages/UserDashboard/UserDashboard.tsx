@@ -82,12 +82,12 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
   const [exemptionForm, setExemptionForm] = useState<{
     priorityGroup: string;
-    documents: File[];
+    cccd: string;
     validTo?: { month: string; year: string };
   }>({
     priorityGroup: "",
-    documents: [],
-  });
+    cccd: "",
+  })
   const [exemptionStatus, setExemptionStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
@@ -171,39 +171,17 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     fetchActiveTickets();
   }, [userId]);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files).filter(
-        (file) =>
-          file.type.startsWith("image/") || file.type === "application/pdf"
-      );
-      setExemptionForm((prev) => ({
-        ...prev,
-        documents: [...prev.documents, ...newFiles],
-      }));
-    }
-  };
-
-  const removeDocument = (index: number) => {
-    setExemptionForm((prev) => ({
-      ...prev,
-      documents: prev.documents.filter((_, i) => i !== index),
-    }));
-  };
-
   const handleExemptionSubmit = async () => {
-    if (!exemptionForm.priorityGroup || exemptionForm.documents.length === 0) {
+    if (!exemptionForm.priorityGroup || !exemptionForm.cccd) {
       setExemptionStatus({
         type: "error",
-        message: "Vui lòng chọn loại đối tượng và đính kèm ít nhất 1 tài liệu.",
+        message: "Vui lòng chọn loại đối tượng và nhập số căn cước công dân.",
       });
       return;
     }
-    if (exemptionForm.priorityGroup == "student") {
+    if (exemptionForm.priorityGroup === "student") {
       const { data } = await applyStudentDiscount(exemptionForm);
-      console.log(data);
-      if (data.error_code != 0) {
+      if (data.error_code !== 0) {
         setExemptionStatus({
           type: "error",
           message: data.message,
@@ -212,8 +190,7 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
       }
     } else {
       const { data } = await applyFreeDiscount(exemptionForm);
-      console.log(data);
-      if (data.error_code != 0) {
+      if (data.error_code !== 0) {
         setExemptionStatus({
           type: "error",
           message: data.message,
@@ -226,14 +203,13 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
       message:
         "Đơn xin miễn/giảm vé đã được nộp thành công. Chúng tôi sẽ xem xét và phản hồi trong vòng 3-5 ngày làm việc.",
     });
-    setExemptionForm({ priorityGroup: "", documents: [], validTo: undefined });
+    setExemptionForm({ priorityGroup: "", cccd: "", validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
     alert("Đơn đã gửi thành công");
   };
 
-  const isFormValid =
-    exemptionForm.priorityGroup != "" && exemptionForm.documents.length > 0;
+  const isFormValid = exemptionForm.priorityGroup !== "" && exemptionForm.cccd !== "";
 
   return (
     <div className="mt-8">
@@ -310,8 +286,6 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
           exemptionForm={exemptionForm}
           setExemptionForm={setExemptionForm}
           exemptionStatus={exemptionStatus}
-          handleFileUpload={handleFileUpload}
-          removeDocument={removeDocument}
           handleExemptionSubmit={handleExemptionSubmit}
           isFormValid={isFormValid}
           priorityGroups={priorityGroups}

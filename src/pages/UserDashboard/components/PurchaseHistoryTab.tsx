@@ -58,7 +58,6 @@ const PurchaseHistoryTab: React.FC<PurchaseHistoryTabProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Mã giao dịch</TableHead>
                 <TableHead>Ngày</TableHead>
                 <TableHead>Loại vé</TableHead>
                 <TableHead>Tuyến</TableHead>
@@ -70,9 +69,6 @@ const PurchaseHistoryTab: React.FC<PurchaseHistoryTabProps> = ({
             <TableBody>
               {purchaseHistory.map((item) => (
                 <TableRow key={item._id}>
-                  <TableCell className="font-medium">
-                    {item.transaction_id || item._id}
-                  </TableCell>
                   <TableCell>
                     {item.createdAt
                       ? new Date(item.createdAt).toLocaleString("vi-VN")
