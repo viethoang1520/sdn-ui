@@ -1,0 +1,1 @@
+export type TicketCategory = "route" | "time-limited"
