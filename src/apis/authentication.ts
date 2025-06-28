@@ -4,7 +4,7 @@ import axios from "axios";
 export const login = async (loginData) => {
   try {
     const {username, password} = loginData
-    return await axios.post('http://localhost:3000/login/validate', {
+    return await axios.post(`${import.meta.env.VITE_APP_API_URL}/login/validate`, {
       username, password
     }) 
   } catch (error) {
@@ -15,7 +15,7 @@ export const login = async (loginData) => {
 export const register = async (registerData) => {
   try {
     const { username, password, fullName } = registerData
-    const data = await axios.post('http://localhost:3000/register/validate', {
+    const data = await axios.post(`${import.meta.env.VITE_APP_API_URL}/register/validate`, {
       username, password, full_name: fullName
     })
     return data
