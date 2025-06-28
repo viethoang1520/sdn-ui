@@ -1,7 +1,11 @@
 import axiosClient from "./axiosClient"
 
 const getListStation = async () => {
-     return await axiosClient.get('/station')
+     try {
+          return await axiosClient.get('/station')
+     } catch (error) {
+          console.log(error)
+     }
 }
 
 export { getListStation }

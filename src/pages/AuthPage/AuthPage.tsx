@@ -1,35 +1,33 @@
-import React, { useEffect, useState } from "react";
+import { login, register } from "@/apis/authentication"
+import { useUserStore } from "@/store/userStore"
+import React, { useState } from "react"
+import { useNavigate } from "react-router"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import LoginForm from "./components/LoginForm";
-import RegisterForm from "./components/RegisterForm";
-import SocialLogin from "./components/SocialLogin";
-import { login, register } from "@/apis/authentication";
-import { useNavigate } from "react-router";
-import { useUserStore } from "@/store/userStore";
-import { Label } from "../../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { motion } from "framer-motion";
+} from "../../components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import LoginForm from "./components/LoginForm"
+import RegisterForm from "./components/RegisterForm"
+import SocialLogin from "./components/SocialLogin"
+import { toast } from "sonner"
 
 const AuthPage = () => {
-  const setUser = useUserStore((state:any) => state.setUser)
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const fetchUser = useUserStore((state) => state.fetchUser)
 
   // Login form state
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
-  });
+  })
 
   // Register form state
   const [registerData, setRegisterData] = useState({
@@ -37,45 +35,44 @@ const AuthPage = () => {
     username: "",
     password: "",
     confirmPassword: "",
-  });
+  })
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
     const response = await login(loginData)
     const token = response.data.token
-    const fullName = response.data.full_name
 
-    console.log(response)
     if (token) {
+      toast.success('Login success!')
       localStorage.setItem('token', token)
-      setUser({fullName})
-      setIsLoading(false);
+      fetchUser()
+      setIsLoading(false)
       navigate('/')
     } else {
-      alert(response.data.message)
-      setIsLoading(false);
+      toast.error(response.data.message)
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     if (registerData.password !== registerData.confirmPassword) {
-      alert("Mật khẩu không khớp!");
-      setIsLoading(false);
-      return;
+      toast.error("Mật khẩu không khớp!")
+      setIsLoading(false)
+      return
     }
     const response = await register(registerData)
     const data = response.data
     const error_code = data.error_code
     if (error_code === 0) {
-      alert(response.data.message)
+      toast.success(response.data.message)
       setIsLoading(false);
       navigate('/')
     } else {
-      alert(response.data.message)
+      toast.error(response.data.message)
       setIsLoading(false);
     }
   };
