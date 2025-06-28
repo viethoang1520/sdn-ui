@@ -24,12 +24,11 @@ const Header = () => {
   const user = useUserStore((state) => state.user)
   const setUser = useUserStore((state) => state.setUser)
   const navigate = useNavigate()
-  console.log(user)
+
   const handleLogout = () => {
     localStorage.removeItem('token')
     setUser(null)
-    // window.location.reload()
-    navigate('/login')
+    navigate('/auth')
   }
 
   return (
@@ -89,7 +88,7 @@ const Header = () => {
                       {user?.full_name}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
+                      {user?.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>

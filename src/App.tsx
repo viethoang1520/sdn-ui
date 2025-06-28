@@ -1,18 +1,17 @@
-import Home from "./pages/Home"
-import { Routes, Route } from 'react-router-dom'
-import UserDashboard from "./pages/UserDashboard/UserDashboard"
-import MainLayout from "./layouts/MainLayout"
-import AuthPage from "./pages/AuthPage/AuthPage"
-import Tickets from "./pages/UserDashboard/Tickets"
-import TrainSchedule from "./pages/TrainSchedule/TrainSchedule"
-import AdminDashboard from "./pages/AdminDashBoard/AdminDashboard"
-// import TicketPurchaseFlow from "./pages/TicketPurchaseFlow/TicketPurchaseFlow"
-import SuccessPayment from "./pages/Payment/SuccessPayment"
-import ErrorPayment from "./pages/Payment/ErrorPayment"
-import { Toaster } from "./components/ui/sonner"
-import TicketPurchaseSystem from "./pages/TicketPurchaseSystem/TicketPurchaseSystem"
-import { useUserStore } from "./store/userStore"
 import { useEffect } from "react"
+import { Route, Routes } from 'react-router-dom'
+import { RequireAuth } from "./Auth/RequireAuth"
+import { Toaster } from "./components/ui/sonner"
+import MainLayout from "./layouts/MainLayout"
+import AdminDashboard from "./pages/AdminDashBoard/AdminDashboard"
+import AuthPage from "./pages/AuthPage/AuthPage"
+import Home from "./pages/Home"
+import ErrorPayment from "./pages/Payment/ErrorPayment"
+import SuccessPayment from "./pages/Payment/SuccessPayment"
+import TicketPurchaseSystem from "./pages/TicketPurchaseSystem/TicketPurchaseSystem"
+import TrainSchedule from "./pages/TrainSchedule/TrainSchedule"
+import UserDashboard from "./pages/UserDashboard/UserDashboard"
+import { useUserStore } from "./store/userStore"
 
 function App() {
   const fetchUser = useUserStore((state) => state.fetchUser)
@@ -29,12 +28,13 @@ function App() {
       <Toaster richColors position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/ticket-purchase" element={<TicketPurchaseSystem />} />
+        </Route>
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/tickets" element={<Tickets />} />
         <Route path="/train-schedule" element={<TrainSchedule />} />
-        <Route path="/ticket-purchase" element={<TicketPurchaseSystem />} />
         <Route path="/payment/success" element={<SuccessPayment />} />
         <Route path="/payment/error" element={<ErrorPayment />} />
       </Routes>

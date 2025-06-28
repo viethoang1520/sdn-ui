@@ -1,6 +1,6 @@
-import React from "react";
-import { ChevronRight, CreditCard, QrCode, User, Clock } from "lucide-react";
+import { ChevronRight, Clock, CreditCard, QrCode, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -10,23 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Badge } from "../components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 const Home = () => {
   const navigate = useNavigate();
 
   const handleBuyTicket = () => {
-    navigate('/tickets');
-  };
+    navigate('/ticket-purchase')
+  }
 
   return (
     <div className="min-h-screen bg-background">
