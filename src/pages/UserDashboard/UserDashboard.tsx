@@ -13,6 +13,7 @@ import ExemptionDialog from "./components/ExemptionDialog";
 import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import QRCodeDialog from "./components/QRCodeDialog";
 import UserProfileCard from "./components/UserProfileCard";
+import { useUserStore } from "@/store/userStore";
 
 interface UserDashboardProps {
   user?: {
@@ -97,8 +98,8 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     []
   );
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId") || "685f7d0b9c75e01d509e8206";
-
+const userId = useUserStore((state) => state.user._id)
+console.log(userId)
   const priorityGroups = [
     { value: "student", label: "Sinh viên", discount: "50%" },
     { value: "child", label: "Trẻ dưới 6 tuổi", discount: "100%" },
