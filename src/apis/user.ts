@@ -16,4 +16,21 @@ const updateUserInformation = async (user) => {
      }
 }
 
-export { getUserInformation, updateUserInformation }
+const getUserPurchaseHistory = async (userId: string) => {
+     try {
+          return await axiosClient.get(`/ticket/user/${userId}`)
+     } catch (error) {
+          console.log(`Error at getUserPurchaseHistory: ${error}`)
+     }
+}
+
+const getUserActiveTickets = async (userId: string) => {
+     try {
+          return await axiosClient.get(`/ticket/active/${userId}`)
+     } catch (error) {
+          console.log(`Error at getUserActiveTickets: ${error}`)
+     }
+}
+
+
+export { getUserInformation, updateUserInformation, getUserPurchaseHistory, getUserActiveTickets }

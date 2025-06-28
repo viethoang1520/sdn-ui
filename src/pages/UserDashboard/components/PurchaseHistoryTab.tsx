@@ -32,6 +32,8 @@ interface PurchaseHistoryApiItem {
   updatedAt: string;
   start_station_name?: string | null;
   end_station_name?: string | null;
+  ticket_category?: string;
+  route_price?: number;
 }
 
 interface PurchaseHistoryTabProps {
@@ -76,7 +78,7 @@ const PurchaseHistoryTab: React.FC<PurchaseHistoryTabProps> = ({
                       ? new Date(item.createdAt).toLocaleString("vi-VN")
                       : "-"}
                   </TableCell>
-                  <TableCell>{item.ticket_type?.name || "-"}</TableCell>
+                  <TableCell>{item.ticket_type?.name || item.ticket_category}</TableCell>
                   <TableCell>
                     {item.start_station_name && item.end_station_name
                       ? `${item.start_station_name} - ${item.end_station_name}`
@@ -85,7 +87,7 @@ const PurchaseHistoryTab: React.FC<PurchaseHistoryTabProps> = ({
                   <TableCell>
                     {item.ticket_type?.base_price !== undefined
                       ? item.ticket_type.base_price.toLocaleString() + " VND"
-                      : "-"}
+                      : item.route_price.toLocaleString() + " VND"}
                   </TableCell>
                   <TableCell>{item.status}</TableCell>
                   <TableCell>
