@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, language }) 
         onClick={() => setActiveTab("user-approval")}
       >
         <Users className="mr-2 h-4 w-4" />
-        {language === "vi" ? "Phê duyệt người dùng" : "User Approval"}
+        {language === "vi" ? "Phê duyệt đơn" : "User Approval"}
       </Button>
       <Button
         variant={activeTab === "reports" ? "default" : "ghost"}
