@@ -55,7 +55,7 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <img
-                  src="https://images.unsplash.com/photo-1581262177000-8139a463e531?w=400&q=80"
+                  src="https://cellphones.com.vn/sforum/wp-content/uploads/2024/01/metro-th.jpg"
                   alt="Single Trip Ticket"
                   className="rounded-md w-full h-32 object-cover"
                 />
@@ -73,7 +73,7 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <img
-                  src="https://images.unsplash.com/photo-1565043534407-2db36dc4fd4a?w=400&q=80"
+                  src="https://i.ex-cdn.com/vntravellive.com/files/news/2024/12/24/hanh-trinh-ket-noi-di-san-sai-gon-cung-metro-so-1-010833.jpg"
                   alt="Daily Pass"
                   className="rounded-md w-full h-32 object-cover"
                 />
@@ -91,7 +91,7 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <img
-                  src="https://images.unsplash.com/photo-1517737812598-1a43d0ef2a60?w=400&q=80"
+                  src="https://cdn3.ivivu.com/2025/01/467021646_1136269665170394_956958479013069313_n-e1736751361618.jpg"
                   alt="3-Day Pass"
                   className="rounded-md w-full h-32 object-cover"
                 />
@@ -112,7 +112,7 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <img
-                  src="https://images.unsplash.com/photo-1568736772245-26914aae0b09?w=400&q=80"
+                  src="https://taumetro.com/wp-content/uploads/2024/11/hinh-anh-thuc-te-he-thong-metro-so-1-ben-thanh-suoi-tien-5.jpg"
                   alt="Monthly Pass"
                   className="rounded-md w-full h-32 object-cover"
                 />
