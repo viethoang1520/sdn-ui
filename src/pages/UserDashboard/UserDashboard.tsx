@@ -143,7 +143,7 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
           const mapped = res.data.data.map((item) => ({
             id: item._id,
             transactionId: item.transaction_id,
-            type: item.ticket_type?.name || "Không xác định",
+            type: item.ticket_type?.name || "Vé tuyến",
             status: item.status,
             createdAt: item.createdAt,
             expiryDate: item.ticket_type?.expiry_date,
