@@ -1,7 +1,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Edit, FileCheck, FileText, User } from "lucide-react";
 import React from "react";
 
@@ -9,6 +10,14 @@ interface UserProfileCardProps {
   user: {
     full_name: string;
     email: string;
+    cccd: string
+    isAdmin: boolean,
+    passenger_categories: {
+      discount: number,
+      expiry_date: string,
+      passenger_type: string,
+      status: string
+    }
   }
   onEdit: () => void
   onExemption: () => void
@@ -24,14 +33,15 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, onEdit, onExemp
       </Avatar>
       <div>
         <CardTitle>{user?.full_name}</CardTitle>
-        {/* <CardDescription className="flex items-center gap-2">
-          {user.cccdLinked ? (
+        <CardDescription className="flex items-center gap-2 pt-2">
+          {user?.cccd ? (
             <>
               <Badge variant="secondary" className="bg-green-100 text-green-800">
                 CCCD Đã liên kết
               </Badge>
-              {user.priorityStatus && (
-                <Badge className="bg-blue-100 text-blue-800">{user.priorityStatus}</Badge>
+
+              {user?.passenger_categories.passenger_type && (
+                <Badge className="bg-blue-100 text-blue-800">{user?.passenger_categories.passenger_type} {user?.passenger_categories.status === 'PENDING' ? '(Đang chờ)' : ''}</Badge>
               )}
             </>
           ) : (
@@ -39,7 +49,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, onEdit, onExemp
               CCCD Chưa liên kết
             </Badge>
           )}
-        </CardDescription> */}
+        </CardDescription>
       </div>
     </CardHeader>
     <CardContent>
@@ -47,17 +57,23 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, onEdit, onExemp
         <div className="flex items-center gap-2">
           <User size={16} />
           <span className="text-sm text-muted-foreground">
-            ID: Chưa liên kết
+            {user?.cccd || 'Chưa liên kết CCCD'}
           </span>
         </div>
+
         <div className="flex items-center gap-2">
           <FileText size={16} />
-          <span className="text-sm text-muted-foreground">{user?.email}</span>
+          <span className="text-sm text-muted-foreground">{user?.email || 'Chưa liên kết email'}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <CreditCard size={16} />
-          <span className="text-sm text-muted-foreground">{'0332667829'}</span>
-        </div>
+
+        {user?.passenger_categories && user?.passenger_categories?.status !== 'PENDING'
+          ?
+          <div className="flex items-center gap-2">
+            <CreditCard size={16} />
+            <span className="text-sm text-muted-foreground">Giảm {user.passenger_categories.discount}%</span>
+          </div>
+          :
+          <span></span>}
       </div>
     </CardContent>
     <CardFooter className="flex flex-col gap-2">

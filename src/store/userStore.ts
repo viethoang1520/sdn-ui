@@ -7,6 +7,13 @@ interface User {
   email: string
   cccd: string
   isAdmin: boolean
+  username: string
+  passenger_categories: {
+    discount: number,
+    expiry_date: string,
+    passenger_type: string,
+    status: string
+  }
 }
 
 interface UserStore {
@@ -26,7 +33,6 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchUser: async () => {
     try {
       const { data } = await getUserInformation()
-      // console.log(data.user);
       set({ user: data.user })
     } catch (error) {
       console.log(error)

@@ -68,6 +68,7 @@ interface ActiveTicketItem {
 }
 
 const UserDashboard: React.FC<UserDashboardProps> = () => {
+  const fetchUser = useUserStore(state => state.fetchUser)
   const user = useUserStore((state) => state.user)
   const setUser = useUserStore((state) => state.setUser)
   const [activeEdit, setActiveEdit] = useState<boolean>(true);
@@ -196,6 +197,7 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     setExemptionForm({ priorityGroup: "", cccd: "", validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
+    fetchUser()
     toast.success("Đơn đã gửi thành công");
   };
 
