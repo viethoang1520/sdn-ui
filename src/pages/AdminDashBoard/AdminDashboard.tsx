@@ -1,4 +1,4 @@
-import { getListApproval } from "@/apis/admin"
+import { getAdminAnalysis, getListApproval } from "@/apis/admin"
 import {
   BarChart,
   CreditCard,
@@ -46,6 +46,9 @@ const AdminDashboard = () => {
   const [language, setLanguage] = useState<"vi" | "en">("vi")
   /* CHANGE HERE API */
   const [userApprovals, setUserApprovals] = useState<UserApproval[]>()
+  const [dataAnalysis, setDataAnalysis] = useState(null)
+
+  console.log(dataAnalysis);
 
   // Mock data for dashboard metrics
   const metrics: DashboardMetric[] = [
@@ -149,6 +152,17 @@ const AdminDashboard = () => {
     }
   }
 
+  const fetchAdminAnalysis = async () => {
+    const res = await getAdminAnalysis()
+    if (res) {
+      setDataAnalysis(res)
+    }
+  }
+
+  useEffect(() => {
+    fetchAdminAnalysis()
+  }, [])
+
   useEffect(() => {
     fetchUserApproval()
   }, [])
@@ -165,7 +179,7 @@ const AdminDashboard = () => {
         <main className="p-4 md:p-6">
           {/* Dashboard Tab */}
           {activeTab === "dashboard" && (
-            <DashboardTab metrics={metrics} stations={stations} language={language} />
+            <DashboardTab metrics={metrics} stations={stations} language={language} dataAnalysis={dataAnalysis} />
           )}
           {/* Fare Management Tab */}
           {activeTab === "fare-management" && (

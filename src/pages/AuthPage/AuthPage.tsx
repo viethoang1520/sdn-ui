@@ -2,6 +2,7 @@ import { login, register } from "@/apis/authentication"
 import { useUserStore } from "@/store/userStore"
 import React, { useState } from "react"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import LoginForm from "./components/LoginForm"
 import RegisterForm from "./components/RegisterForm"
 import SocialLogin from "./components/SocialLogin"
-import { toast } from "sonner"
 
 const AuthPage = () => {
   const navigate = useNavigate()
@@ -23,13 +23,11 @@ const AuthPage = () => {
   const [rememberMe, setRememberMe] = useState(false)
   const fetchUser = useUserStore((state) => state.fetchUser)
 
-  // Login form state
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
   })
 
-  // Register form state
   const [registerData, setRegisterData] = useState({
     fullName: "",
     username: "",
@@ -41,14 +39,25 @@ const AuthPage = () => {
     e.preventDefault()
     setIsLoading(true)
     const response = await login(loginData)
+    console.log(response.data.isAdmin);
     const token = response.data.token
+    const isAdmin = response.data.isAdmin
 
     if (token) {
-      toast.success('Login success!')
-      localStorage.setItem('token', token)
-      fetchUser()
-      setIsLoading(false)
-      navigate('/')
+      if (isAdmin) {
+        toast.success('Welcome admin!')
+        localStorage.setItem('token', token)
+        fetchUser()
+        navigate('/admin-dashboard')
+        setIsLoading(false)
+      } else {
+        toast.success('Login success!')
+        localStorage.setItem('token', token)
+        fetchUser()
+        setIsLoading(false)
+        navigate('/')
+      }
+
     } else {
       toast.error(response.data.message)
       setIsLoading(false)
@@ -70,22 +79,22 @@ const AuthPage = () => {
     if (error_code === 0) {
       toast.success(response.data.message)
       setIsLoading(false);
-      navigate('/')
+      window.location.reload();
     } else {
       toast.error(response.data.message)
       setIsLoading(false);
     }
-  };
+  }
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked");
+    console.log("Google login clicked")
     // Implement Google OAuth logic here
-  };
+  }
 
   const handleFacebookLogin = () => {
-    console.log("Facebook login clicked");
+    console.log("Facebook login clicked")
     // Implement Facebook OAuth logic here
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4 pt-10">
@@ -136,7 +145,7 @@ const AuthPage = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default AuthPage;
+export default AuthPage
