@@ -55,6 +55,12 @@ const Header = () => {
             Lịch trình
           </Link>
           <Link
+            to="/ticket-purchase"
+            className="text-sm font-medium text-muted-foreground hover:text-primary"
+          >
+            Mua vé
+          </Link>
+          <Link
             to="/user-dashboard"
             className="text-sm font-medium text-muted-foreground hover:text-primary"
           >

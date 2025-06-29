@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useUserStore } from "@/store/userStore";
 import { CreditCard, Edit, LogOut } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +14,14 @@ interface AccountInfoTabProps {
     full_name: string
     email: string
     cccd: string
+    isAdmin: boolean
+    username: string
+    passenger_categories: {
+      discount: number,
+      expiry_date: string,
+      passenger_type: string,
+      status: string
+    }
   },
   activeEdit: boolean
   setActiveEdit: (value: boolean) => void
@@ -21,6 +30,7 @@ interface AccountInfoTabProps {
 const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setActiveEdit }) => {
 
   const [userInformation, setUserInformation] = useState(user)
+  const fetchUser = useUserStore(state => state.fetchUser)
 
   useEffect(() => {
     setUserInformation(user)
@@ -30,9 +40,10 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
     const { data } = await updateUserInformation(userInformation)
     if (data.error_code === 0) {
       setActiveEdit(true)
-      toast(data.message)
+      fetchUser()
+      toast.success(data.message)
     } else {
-      toast(data.message)
+      toast.error(data.message)
     }
   }
 
@@ -53,12 +64,12 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
             <Input id="email" type="email" defaultValue={user?.email} onChange={(e) => setUserInformation({ ...userInformation, email: e.target.value })} disabled={activeEdit} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Số điện thoại</Label>
-            <Input id="phone" defaultValue='0332667829' disabled={activeEdit} />
+            <Label htmlFor="phone">Tên đăng nhập</Label>
+            <Input id="phone" defaultValue={user?.username} disabled={true} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="cccd">Số CCCD</Label>
-            <Input id="cccd" defaultValue={user?.cccd} placeholder="Nhập số CCCD để liên kết" disabled={true} />
+            <Input id="cccd" defaultValue={user?.cccd} placeholder="Chưa liên kết CCCD" disabled={true} />
           </div>
         </div>
         <Separator />
@@ -80,22 +91,7 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
                 <Edit className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-md">
-              <div className="flex items-center gap-3">
-                <CreditCard />
-                <div>
-                  <p className="font-medium">MoMo</p>
-                  <p className="text-sm text-muted-foreground">Liên kết với SĐT: {'0332667829'}</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm">
-                <Edit className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
-          <Button variant="outline" className="w-full">
-            <CreditCard className="mr-2 h-4 w-4" /> Thêm phương thức thanh toán
-          </Button>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
