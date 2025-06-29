@@ -51,14 +51,13 @@ const ActiveTicketsTab: React.FC<ActiveTicketsTabProps> = ({
               <CardHeader className="bg-blue-50 pb-2">
                 <div className="flex justify-between items-center">
                   <CardTitle className="text-lg">{ticket.type}</CardTitle>
-                  <Badge>{ticket.transactionId}</Badge>
                 </div>
                 {ticket.startStation && ticket.endStation ? (
                   <CardDescription>
                     Tuyến: {ticket.startStation} - {ticket.endStation}
                   </CardDescription>
                 ) : (
-                    <CardDescription>Vé sử dụng: {ticket?.ticket_category}</CardDescription>
+                    <CardDescription>Vé sử dụng: {ticket?.type}</CardDescription>
                 )}
               </CardHeader>
               <CardContent className="pt-4">
