@@ -1,94 +1,100 @@
-import React, { useEffect, useState } from "react";
+import { login, register } from "@/apis/authentication"
+import { useUserStore } from "@/store/userStore"
+import React, { useState } from "react"
+import { useNavigate } from "react-router"
+import { toast } from "sonner"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import LoginForm from "./components/LoginForm";
-import RegisterForm from "./components/RegisterForm";
-import SocialLogin from "./components/SocialLogin";
-import { login, register } from "@/apis/authentication";
-import { useNavigate } from "react-router";
-import { useUserStore } from "@/store/userStore";
-import { Label } from "../../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { motion } from "framer-motion";
+} from "../../components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import LoginForm from "./components/LoginForm"
+import RegisterForm from "./components/RegisterForm"
+import SocialLogin from "./components/SocialLogin"
 
 const AuthPage = () => {
-  const setUser = useUserStore((state:any) => state.setUser)
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const fetchUser = useUserStore((state) => state.fetchUser)
 
-  // Login form state
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
-  });
+  })
 
-  // Register form state
   const [registerData, setRegisterData] = useState({
     fullName: "",
     username: "",
     password: "",
     confirmPassword: "",
-  });
+  })
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
     const response = await login(loginData)
+    console.log(response.data.isAdmin);
     const token = response.data.token
-    const fullName = response.data.full_name
+    const isAdmin = response.data.isAdmin
 
-    console.log(response)
     if (token) {
-      localStorage.setItem('token', token)
-      setUser({fullName})
-      setIsLoading(false);
-      navigate('/')
+      if (isAdmin) {
+        toast.success('Welcome admin!')
+        localStorage.setItem('token', token)
+        fetchUser()
+        navigate('/admin-dashboard')
+        setIsLoading(false)
+      } else {
+        toast.success('Login success!')
+        localStorage.setItem('token', token)
+        fetchUser()
+        setIsLoading(false)
+        navigate('/')
+      }
+
     } else {
-      alert(response.data.message)
-      setIsLoading(false);
+      toast.error(response.data.message)
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     if (registerData.password !== registerData.confirmPassword) {
-      alert("Mật khẩu không khớp!");
-      setIsLoading(false);
-      return;
+      toast.error("Mật khẩu không khớp!")
+      setIsLoading(false)
+      return
     }
     const response = await register(registerData)
     const data = response.data
     const error_code = data.error_code
     if (error_code === 0) {
-      alert(response.data.message)
+      toast.success(response.data.message)
       setIsLoading(false);
-      navigate('/')
+      window.location.reload();
     } else {
-      alert(response.data.message)
+      toast.error(response.data.message)
       setIsLoading(false);
     }
-  };
+  }
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked");
+    console.log("Google login clicked")
     // Implement Google OAuth logic here
-  };
+  }
 
   const handleFacebookLogin = () => {
-    console.log("Facebook login clicked");
+    console.log("Facebook login clicked")
     // Implement Facebook OAuth logic here
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4 pt-10">
@@ -139,7 +145,7 @@ const AuthPage = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default AuthPage;
+export default AuthPage

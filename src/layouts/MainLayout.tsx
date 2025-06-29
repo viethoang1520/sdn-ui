@@ -1,9 +1,4 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, ChevronRight } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { useUserStore } from "@/store/userStore";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserCircle, LogOut, Settings } from "lucide-react";
+import { useUserStore } from "@/store/userStore";
+import { LogOut, Settings, UserCircle } from "lucide-react";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
 
 function getInitials(name?: string) {
   if (!name) return "?";
@@ -22,11 +21,16 @@ function getInitials(name?: string) {
 }
 
 const Header = () => {
-  const user = useUserStore((state: any) => state.user)
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
+  const navigate = useNavigate()
+
   const handleLogout = () => {
-    // TODO: call logout logic from store
-    window.location.reload();
-  };
+    localStorage.removeItem('token')
+    setUser(null)
+    navigate('/auth')
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
@@ -63,16 +67,17 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 focus:outline-none">
                   <span className="hidden md:block text-sm font-medium text-foreground">
-                    {user.fullName}
+                    {user?.full_name}
                   </span>
                   <Avatar className="h-10 w-10">
-                    {user.avatarUrl ? (
+                    {/* {user?.avatarUrl ? (
                       <AvatarImage src={user.avatarUrl} alt={user.fullName} />
-                    ) : (
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {getInitials(user.fullName)}
-                      </AvatarFallback>
-                    )}
+                    ) :
+                      ( */}
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                      {getInitials(user?.full_name)}
+                    </AvatarFallback>
+                    {/* )} */}
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
@@ -80,10 +85,10 @@ const Header = () => {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user.fullName}
+                      {user?.full_name}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
+                      {user?.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -121,7 +126,6 @@ const Header = () => {
   )
 }
 
-
 const Footer = () => (
   <footer className="border-t py-8 bg-muted/30">
     <div className="container flex flex-col md:flex-row justify-between items-center gap-4">
@@ -138,7 +142,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+)
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -149,8 +153,5 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     </div>
   )
 }
-  
 
-
-
-export default MainLayout;
+export default MainLayout

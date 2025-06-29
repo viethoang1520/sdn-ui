@@ -10,8 +10,9 @@ import { toast } from "sonner";
 
 interface AccountInfoTabProps {
   user: {
-    full_name: string;
-    email: string;
+    full_name: string
+    email: string
+    cccd: string
   },
   activeEdit: boolean
   setActiveEdit: (value: boolean) => void
@@ -23,7 +24,6 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
 
   useEffect(() => {
     setUserInformation(user)
-    console.log(user);
   }, [user])
 
   const handleClickSave = async () => {
@@ -58,7 +58,7 @@ const AccountInfoTab: React.FC<AccountInfoTabProps> = ({ user, activeEdit, setAc
           </div>
           <div className="space-y-2">
             <Label htmlFor="cccd">Số CCCD</Label>
-            <Input id="cccd" defaultValue={""} placeholder="Nhập số CCCD để liên kết" disabled={true} />
+            <Input id="cccd" defaultValue={user?.cccd} placeholder="Nhập số CCCD để liên kết" disabled={true} />
           </div>
         </div>
         <Separator />

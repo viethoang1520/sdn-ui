@@ -1,46 +1,54 @@
-import React, { useState } from "react";
+import { getAdminAnalysis, getListApproval } from "@/apis/admin"
 import {
   BarChart,
-  Users,
   CreditCard,
   FileText,
+  Users,
 } from "lucide-react";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
-import DashboardTab from "./components/DashboardTab";
-import FareManagementTab from "./components/FareManagementTab";
-import UserApprovalTab from "./components/UserApprovalTab";
-import ReportsTab from "./components/ReportsTab";
+import React, { useEffect, useState } from "react"
+import DashboardTab from "./components/DashboardTab"
+import FareManagementTab from "./components/FareManagementTab"
+import Header from "./components/Header"
+import ReportsTab from "./components/ReportsTab"
+import Sidebar from "./components/Sidebar"
+import UserApprovalTab from "./components/UserApprovalTab"
 
 interface DashboardMetric {
-  title: string;
-  value: string | number;
-  change: number;
-  icon: React.ReactNode;
+  title: string
+  value: string | number
+  change: number
+  icon: React.ReactNode
 }
 
 interface FareRule {
-  id: string;
-  ticketType: string;
-  fromStation: string;
-  toStation: string;
-  price: number;
-  discountPrice: number;
-  active: boolean;
+  id: string
+  ticketType: string
+  fromStation: string
+  toStation: string
+  price: number
+  discountPrice: number
+  active: boolean
 }
 
 interface UserApproval {
-  id: string;
-  name: string;
-  cccd: string;
-  type: string;
-  status: "pending" | "approved" | "rejected";
-  dateSubmitted: string;
+  _id: string
+  user_id: string
+  full_name: string
+  cccd: string
+  user_type: string
+  status: "PENDING" | "APPROVED" | "REJECTED"
+  dateSubmitted: string
+  createdAt: string
 }
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [language, setLanguage] = useState<"vi" | "en">("vi");
+  const [activeTab, setActiveTab] = useState("dashboard")
+  const [language, setLanguage] = useState<"vi" | "en">("vi")
+  /* CHANGE HERE API */
+  const [userApprovals, setUserApprovals] = useState<UserApproval[]>()
+  const [dataAnalysis, setDataAnalysis] = useState(null)
+
+  console.log(dataAnalysis);
 
   // Mock data for dashboard metrics
   const metrics: DashboardMetric[] = [
@@ -68,7 +76,7 @@ const AdminDashboard = () => {
       change: 5.1,
       icon: <FileText className="h-5 w-5 text-purple-600" />,
     },
-  ];
+  ]
 
   // Mock data for fare rules
   const fareRules: FareRule[] = [
@@ -117,43 +125,7 @@ const AdminDashboard = () => {
       discountPrice: 3000,
       active: true,
     },
-  ];
-
-  // Mock data for user approvals
-  const userApprovals: UserApproval[] = [
-    {
-      id: "1",
-      name: "Nguyen Van A",
-      cccd: "XXXX-XXXX-1234",
-      type: "Student",
-      status: "pending",
-      dateSubmitted: "15/05/2023",
-    },
-    {
-      id: "2",
-      name: "Tran Thi B",
-      cccd: "XXXX-XXXX-5678",
-      type: "Elderly",
-      status: "approved",
-      dateSubmitted: "14/05/2023",
-    },
-    {
-      id: "3",
-      name: "Le Van C",
-      cccd: "XXXX-XXXX-9012",
-      type: "Disabled",
-      status: "rejected",
-      dateSubmitted: "13/05/2023",
-    },
-    {
-      id: "4",
-      name: "Pham Thi D",
-      cccd: "XXXX-XXXX-3456",
-      type: "Student",
-      status: "pending",
-      dateSubmitted: "12/05/2023",
-    },
-  ];
+  ]
 
   // Station data
   const stations = [
@@ -171,7 +143,29 @@ const AdminDashboard = () => {
     "Suoi Tien",
     "BXMT",
     "Suoi Tien Terminal",
-  ];
+  ]
+
+  const fetchUserApproval = async () => {
+    const { data } = await getListApproval()
+    if (data.errorCode === 0) {
+      setUserApprovals(data.data.applications)
+    }
+  }
+
+  const fetchAdminAnalysis = async () => {
+    const res = await getAdminAnalysis()
+    if (res) {
+      setDataAnalysis(res)
+    }
+  }
+
+  useEffect(() => {
+    fetchAdminAnalysis()
+  }, [])
+
+  useEffect(() => {
+    fetchUserApproval()
+  }, [])
 
   return (
     <div className="flex h-screen bg-background">
@@ -185,7 +179,7 @@ const AdminDashboard = () => {
         <main className="p-4 md:p-6">
           {/* Dashboard Tab */}
           {activeTab === "dashboard" && (
-            <DashboardTab metrics={metrics} stations={stations} language={language} />
+            <DashboardTab metrics={metrics} stations={stations} language={language} dataAnalysis={dataAnalysis} />
           )}
           {/* Fare Management Tab */}
           {activeTab === "fare-management" && (
@@ -193,7 +187,7 @@ const AdminDashboard = () => {
           )}
           {/* User Approval Tab */}
           {activeTab === "user-approval" && (
-            <UserApprovalTab userApprovals={userApprovals} language={language} />
+            <UserApprovalTab userApprovals={userApprovals} language={language} fetchUserApprove={fetchUserApproval} />
           )}
           {/* Reports Tab */}
           {activeTab === "reports" && (
@@ -202,7 +196,7 @@ const AdminDashboard = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminDashboard;
+export default AdminDashboard
