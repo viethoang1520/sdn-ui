@@ -13,6 +13,7 @@ import ExemptionDialog from "./components/ExemptionDialog";
 import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import QRCodeDialog from "./components/QRCodeDialog";
 import UserProfileCard from "./components/UserProfileCard";
+import { toast } from "sonner";
 
 interface UserDashboardProps {
   user?: {
@@ -195,7 +196,7 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     setExemptionForm({ priorityGroup: "", cccd: "", validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
-    alert("Đơn đã gửi thành công");
+    toast.success("Đơn đã gửi thành công");
   };
 
   const isFormValid = exemptionForm.priorityGroup !== "" && exemptionForm.cccd !== "";

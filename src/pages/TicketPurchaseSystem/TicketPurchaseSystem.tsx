@@ -36,8 +36,13 @@ export default function TicketPurchaseSystem() {
           "three-day": 0,
           monthly: 0,
      })
-     const [originStation, setOriginStation] = useState('')
-     const [destinationStation, setDestinationStation] = useState('')
+     interface Station {
+          _id: string
+          name: string
+          // Add other station properties if needed
+     }
+          const [originStation, setOriginStation] = useState<Station | null>(null)
+          const [destinationStation, setDestinationStation] = useState<Station | null>(null)
      const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
      const [showConfirmDialog, setShowConfirmDialog] = useState(false)
      const [dataPayment, setDataPayment] = useState(null)
@@ -133,7 +138,7 @@ export default function TicketPurchaseSystem() {
      const handleConfirmTicket = async () => {
           if (ticketCategory === 'route') {
                if (originStation && destinationStation) {
-                    const routes = [{ start_station_id: originStation, end_station_id: destinationStation, quantity: 1 }]
+                    const routes = [{ start_station_id: originStation._id, end_station_id: destinationStation._id, quantity: 1 }]
                     const { data } = await purchaseTicketByRoute(routes, user._id)
                     if (data.errorCode === 0) {
                          setDataPayment({ transaction_id: data.data.transaction._id, items: data.data.tickets, total_price: Math.round(data.data.transaction.total_price) })
@@ -152,8 +157,7 @@ export default function TicketPurchaseSystem() {
                }
                const { data } = await purchaseTicketByType(ticketInfo)
                if (!data.error) {
-                    // console.log(data);
-                    setDataPayment({ transaction_id: data.data.transaction._id, items: data.data.tickets })
+                    setDataPayment({ transaction_id: data.data.transaction._id, items: data.data.tickets, total_price: Math.round(data.data.transaction.total_price) })
                     toast.message(data.message)
                }
           }
@@ -172,8 +176,8 @@ export default function TicketPurchaseSystem() {
           setCurrentStep(1)
           setTicketCategory(null)
           setTimeLimitedQuantities({ daily: 0, "three-day": 0, monthly: 0 })
-          setOriginStation('')
-          setDestinationStation('')
+          setOriginStation(null)
+          setDestinationStation(null)
           setPaymentMethod(null)
      }
 
@@ -291,13 +295,13 @@ export default function TicketPurchaseSystem() {
                                                                  Ga Xuất Phát
                                                             </Label>
                                                        </div>
-                                                       <Select value={originStation} onValueChange={setOriginStation}>
+                                                       <Select value={originStation?._id ?? ""} onValueChange={(value) => setOriginStation(listStation.find((station) => station._id === value))}>
                                                             <SelectTrigger className="h-12 text-base">
                                                                  <SelectValue placeholder="Chọn ga xuất phát" />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                  {listStation?.map((station) => (
-                                                                      <SelectItem key={station._id} value={station._id} disabled={station._id === destinationStation}>
+                                                                      <SelectItem key={station._id} value={station._id} disabled={destinationStation?._id === station._id}>
                                                                            {station.name}
                                                                       </SelectItem>
                                                                  ))}
@@ -322,13 +326,13 @@ export default function TicketPurchaseSystem() {
                                                                  Ga Đích
                                                             </Label>
                                                        </div>
-                                                       <Select value={destinationStation} onValueChange={setDestinationStation}>
+                                                       <Select value={destinationStation?._id ?? ""} onValueChange={(value) => setDestinationStation(listStation.find((station) => station._id === value))}>
                                                             <SelectTrigger className="h-12 text-base">
                                                                  <SelectValue placeholder="Chọn ga đích" />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                  {listStation.map((station) => (
-                                                                      <SelectItem key={station._id} value={station._id} disabled={station._id === originStation}>
+                                                                      <SelectItem key={station._id} value={station._id} disabled={originStation?._id === station._id}>
                                                                            {station.name}
                                                                       </SelectItem>
                                                                  ))}
@@ -440,7 +444,7 @@ export default function TicketPurchaseSystem() {
                                                        <div className="flex justify-between items-center py-2">
                                                             <span className="text-xl font-bold text-gray-800">Tổng Cộng</span>
                                                             <span className="text-2xl font-bold text-blue-600">
-                                                                 {dataPayment?.total_price} VND
+                                                                 {Number(dataPayment?.total_price).toLocaleString()} VND
                                                             </span>
                                                        </div>
                                                   </CardContent>
@@ -538,12 +542,8 @@ export default function TicketPurchaseSystem() {
                                                             <div className="flex justify-between">
                                                                  <span className="text-gray-600">Tuyến đường:</span>
                                                                  <span className="font-medium">
-                                                                      {originStation} → {destinationStation}
+                                                                      {originStation?.name} → {destinationStation?.name}
                                                                  </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                 <span className="text-gray-600">Giá vé:</span>
-                                                                 <span className="font-bold text-blue-600">15.000 VND</span>
                                                             </div>
                                                        </div>
                                                   )}
