@@ -1,8 +1,8 @@
-import { CheckCircle, Home, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, FileText, Home } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface SuccessPaymentProps {
   orderCode?: string;
@@ -17,15 +17,12 @@ interface SuccessPaymentProps {
 }
 
 export default function SuccessPayment({
-  orderCode = "#123456",
-  amount = "200.000₫",
   paymentMethod = "VNPAY",
-  paymentTime = new Date().toLocaleString("vi-VN"),
-  products = [
-    { name: "Vé tàu điện ngầm - Lượt đi", quantity: 1, price: "200.000₫" },
-  ],
 }: SuccessPaymentProps) {
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+  const code = searchParams.get('order_code')
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
@@ -46,49 +43,14 @@ export default function SuccessPayment({
           <div className="bg-gray-50 p-4 rounded-lg space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Mã đơn hàng:</span>
-              <span className="font-semibold text-blue-600">{orderCode}</span>
+              <span className="font-semibold text-blue-600">#{code}</span>
             </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Số tiền:</span>
-              <span className="font-bold text-lg text-green-600">{amount}</span>
-            </div>
-
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Phương thức:</span>
               <span className="font-semibold">{paymentMethod}</span>
             </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Thời gian:</span>
-              <span className="font-semibold">{paymentTime}</span>
-            </div>
           </div>
-
-          {products && products.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-2">Danh sách sản phẩm:</h3>
-              <div className="space-y-2">
-                {products.map((product, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center p-2 bg-gray-50 rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-gray-600">
-                        Số lượng: {product.quantity}
-                      </p>
-                    </div>
-                    <span className="font-semibold">{product.price}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           <Separator className="my-4" />
-
           <div className="space-y-3">
             <Button
               onClick={() => navigate("/")}

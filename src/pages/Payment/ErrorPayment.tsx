@@ -2,7 +2,7 @@ import { XCircle, Home, RefreshCw, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface ErrorPaymentProps {
   orderCode?: string;
@@ -14,10 +14,13 @@ interface ErrorPaymentProps {
 export default function ErrorPayment({
   orderCode,
   errorType = "failed",
-  reason,
   onRetryPayment,
 }: ErrorPaymentProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  const [searchParams] = useSearchParams()
+  const code = searchParams.get('orderCode')
+  const status = searchParams.get('status')
 
   const getErrorMessage = () => {
     if (errorType === "cancelled") {
@@ -33,12 +36,6 @@ export default function ErrorPayment({
   };
 
   const errorMessage = getErrorMessage();
-
-  const getReasonText = () => {
-    if (reason) return reason;
-    if (errorType === "cancelled") return "Người dùng hủy giao dịch";
-    return "Lỗi hệ thống, vui lòng thử lại";
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
@@ -63,9 +60,16 @@ export default function ErrorPayment({
             )}
 
             <div className="flex justify-between items-start">
-              <span className="text-gray-600">Lý do:</span>
+              <span className="text-gray-600">Trạng thái:</span>
               <span className="font-medium text-red-600 text-right flex-1 ml-2">
-                {getReasonText()}
+                {status}
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Mã thanh toán:</span>
+              <span className="font-semibold">
+                #{code}
               </span>
             </div>
 

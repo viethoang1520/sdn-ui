@@ -24,4 +24,27 @@ const rejectApplication = async (applicationId) => {
      }
 }
 
-export { getListApproval, approveApplication, rejectApplication }
+const getAdminAnalysis = async () => {
+     try {
+          const ADMIN = 'admin'
+          const { data: dataSummary } = await axiosClient.get(`${ADMIN}/summary`)
+          const { data: allTicketsByMonth } = await axiosClient.get(`${ADMIN}/tickets-by-month`)
+          const { data: allTicketsData } = await axiosClient.get(`${ADMIN}/today-tickets`)
+          const { data: todayPassengersData } = await axiosClient.get(`${ADMIN}/today-passengers`)
+          const { data: todayRevenueData } = await axiosClient.get(`${ADMIN}/today-revenue`)
+          const { data: todayDiscountTickets } = await axiosClient.get(`${ADMIN}/today-discount-tickets`)
+
+          return {
+               summary: dataSummary,
+               allTicketsByMonth,
+               allTickets: allTicketsData.ticketsToday,
+               allTicketsData,
+               todayPassengers: todayPassengersData.passengersToday,
+               todayRevenue: todayRevenueData.revenueToday,
+               todayDiscountTickets
+          }
+     } catch (error) {
+          console.log(`[api] Error code at get admin analysis: ${error}`)
+     }
+}
+export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis }
