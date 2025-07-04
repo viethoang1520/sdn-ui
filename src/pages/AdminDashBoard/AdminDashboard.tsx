@@ -168,7 +168,7 @@ const AdminDashboard = () => {
   }, [])
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex bg-background" style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} language={language} />
       {/* Main content */}
