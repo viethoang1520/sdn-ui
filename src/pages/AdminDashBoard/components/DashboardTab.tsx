@@ -2,100 +2,59 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { BarChart, LineChart, Users } from "lucide-react";
+import { BarChart, Users } from "lucide-react";
+import RevenueBarChart from "./RevenueBarChart";
+import LollipopChart from "./LollipopChart";
 
-interface DashboardMetric {
-  title: string;
-  value: string | number;
-  change: number;
-  icon: React.ReactNode;
-}
-
-// interface dataAnalysis {
-//   summary: any;
-//   allTicketsByMonth: number[];
-//   allTicket: number;
-//   todayPassengers: number;
-//   todayRevenue: number;
-//   todayDiscountTickets: number;
-// }
+// Removed unused DashboardMetric and commented-out dataAnalysis interface
 
 interface DashboardTabProps {
-  metrics: DashboardMetric[];
+  metrics: any[]; // metrics prop is not used, but kept for prop compatibility
   stations: string[];
   language: "vi" | "en";
   dataAnalysis: any; // Adjust type as needed based on your data structure
 }
 
 const DashboardTab: React.FC<DashboardTabProps> = ({ metrics, stations, language, dataAnalysis }) => {
-  console.log(dataAnalysis?.allTickets);
+  // Removed unused console.log
   return (
     <div className="space-y-6">
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* {metrics.map((metric, index) => (
-        <Card key={index}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
-            {metric.icon}
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metric.value}</div>
-            <p className={`text-xs ${metric.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {metric.change >= 0 ? "+" : ""}{metric.change}% {language === "vi" ? "so với hôm qua" : "from yesterday"}
-            </p>
-          </CardContent>
-        </Card>
-      ))} */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Tổng vé đã bán</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng doanh thu từ trước đến giờ</CardTitle>
             <BarChart className="h-5 w-5 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{dataAnalysis?.allTickets}</div>
-            {/* <p className={`text-xs ${metric.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-            {metric.change >= 0 ? "+" : ""}{metric.change}% {language === "vi" ? "so với hôm qua" : "from yesterday"}
-          </p> */}
+            <div className="text-2xl font-bold">{Number(dataAnalysis?.totalRevenue ?? 0).toLocaleString()}</div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Tổng vé đã bán</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng vé đã bán hôm nay</CardTitle>
             <BarChart className="h-5 w-5 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{dataAnalysis?.allTickets}</div>
-            {/* <p className={`text-xs ${metric.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-            {metric.change >= 0 ? "+" : ""}{metric.change}% {language === "vi" ? "so với hôm qua" : "from yesterday"}
-          </p> */}
+            <div className="text-2xl font-bold">{dataAnalysis?.ticketsToday ?? 0}</div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Doanh thu hôm nay</CardTitle>
             <BarChart className="h-5 w-5 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Number(dataAnalysis?.todayRevenue).toLocaleString()}</div>
-            {/* <p className={`text-xs ${metric.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-            {metric.change >= 0 ? "+" : ""}{metric.change}% {language === "vi" ? "so với hôm qua" : "from yesterday"}
-          </p> */}
+            <div className="text-2xl font-bold">{Number(dataAnalysis?.revenueToday ?? 0).toLocaleString()}</div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Lượng hành khách</CardTitle>
+            <CardTitle className="text-sm font-medium">Lượng hành khách hôm nay</CardTitle>
             <Users className="h-5 w-5 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Number(dataAnalysis?.todayPassengers).toLocaleString()}</div>
-            {/* <p className={`text-xs ${metric.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-            {metric.change >= 0 ? "+" : ""}{metric.change}% {language === "vi" ? "so với hôm qua" : "from yesterday"}
-          </p> */}
+            <div className="text-2xl font-bold">{Number(dataAnalysis?.passengersToday ?? 0).toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
@@ -107,22 +66,28 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ metrics, stations, language
             <CardDescription>{language === "vi" ? "7 ngày qua" : "Last 7 days"}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
-            <div className="h-full w-full bg-muted/20 rounded-md flex items-center justify-center">
-              <LineChart className="h-16 w-16 text-muted" />
-              <span className="ml-2 text-muted">{language === "vi" ? "Biểu đồ doanh thu" : "Revenue Chart"}</span>
-            </div>
+            {dataAnalysis?.revenueLast7Days && dataAnalysis.revenueLast7Days.length > 0 ? (
+              <RevenueBarChart data={dataAnalysis.revenueLast7Days} />
+            ) : (
+              <div className="h-full w-full bg-muted/20 rounded-md flex items-center justify-center">
+                <span className="ml-2 text-muted">{language === "vi" ? "Không có dữ liệu" : "No data"}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{language === "vi" ? "Lượng hành khách theo ga" : "Passenger Flow by Station"}</CardTitle>
-            <CardDescription>{language === "vi" ? "Hôm nay" : "Today"}</CardDescription>
+            <CardTitle>{language === "vi" ? "Tuyến có doanh thu cao nhất" : "Top Routes by Revenue"}</CardTitle>
+            <CardDescription>{language === "vi" ? "Top 5 tuyến có doanh thu cao nhất" : "Top 5 routes with highest revenue"}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
-            <div className="h-full w-full bg-muted/20 rounded-md flex items-center justify-center">
-              <BarChart className="h-16 w-16 text-muted" />
-              <span className="ml-2 text-muted">{language === "vi" ? "Biểu đồ hành khách" : "Passenger Chart"}</span>
-            </div>
+            {dataAnalysis?.topRoutesByRevenue && dataAnalysis.topRoutesByRevenue.length > 0 ? (
+              <LollipopChart data={dataAnalysis.topRoutesByRevenue} language={language} />
+            ) : (
+              <div className="h-full w-full bg-muted/20 rounded-md flex items-center justify-center">
+                <span className="ml-2 text-muted">{language === "vi" ? "Không có dữ liệu" : "No data"}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
