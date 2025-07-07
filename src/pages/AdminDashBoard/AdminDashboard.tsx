@@ -1,4 +1,4 @@
-import { getAdminAnalysis, getListApproval } from "@/apis/admin"
+import { getAdminAnalysis, getListApproval, getStationStatusToday } from "@/apis/admin"
 import {
   BarChart,
   CreditCard,
@@ -41,12 +41,19 @@ interface UserApproval {
   createdAt: string
 }
 
+interface StationStatus {
+  start_station_id: string;
+  name: string;
+  count: number;
+}
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard")
   const [language, setLanguage] = useState<"vi" | "en">("vi")
   /* CHANGE HERE API */
   const [userApprovals, setUserApprovals] = useState<UserApproval[]>()
   const [dataAnalysis, setDataAnalysis] = useState(null)
+  const [stationStatus, setStationStatus] = useState<StationStatus[]>([])
 
   console.log(dataAnalysis);
 
@@ -127,23 +134,8 @@ const AdminDashboard = () => {
     },
   ]
 
-  // Station data
-  const stations = [
-    "Ben Thanh",
-    "Ba Son",
-    "Van Thanh",
-    "Tan Cang",
-    "Thao Dien",
-    "An Phu",
-    "Rach Chiec",
-    "Phuoc Long",
-    "Binh Thai",
-    "Thu Duc",
-    "High Tech Park",
-    "Suoi Tien",
-    "BXMT",
-    "Suoi Tien Terminal",
-  ]
+  // Station data (sẽ lấy từ API)
+  // const stations = [ ... ]
 
   const fetchUserApproval = async () => {
     const { data } = await getListApproval()
@@ -159,8 +151,16 @@ const AdminDashboard = () => {
     }
   }
 
+  const fetchStationStatus = async () => {
+    const res = await getStationStatusToday();
+    if (res && res.stationStatus) {
+      setStationStatus(res.stationStatus);
+    }
+  }
+
   useEffect(() => {
     fetchAdminAnalysis()
+    fetchStationStatus()
   }, [])
 
   useEffect(() => {
@@ -179,11 +179,11 @@ const AdminDashboard = () => {
         <main className="p-4 md:p-6">
           {/* Dashboard Tab */}
           {activeTab === "dashboard" && (
-            <DashboardTab metrics={metrics} stations={stations} language={language} dataAnalysis={dataAnalysis} />
+            <DashboardTab metrics={metrics} stations={stationStatus} language={language} dataAnalysis={dataAnalysis} />
           )}
           {/* Fare Management Tab */}
           {activeTab === "fare-management" && (
-            <FareManagementTab fareRules={fareRules} stations={stations} language={language} />
+            <FareManagementTab fareRules={fareRules} stations={stationStatus.map(s => s.name)} language={language} />
           )}
           {/* User Approval Tab */}
           {activeTab === "user-approval" && (
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
           )}
           {/* Reports Tab */}
           {activeTab === "reports" && (
-            <ReportsTab stations={stations} language={language} />
+            <ReportsTab stations={stationStatus.map(s => s.name)} language={language} />
           )}
         </main>
       </div>

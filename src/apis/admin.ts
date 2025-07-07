@@ -32,4 +32,13 @@ const getAdminAnalysis = async () => {
           console.log(`[api] Error code at get admin analysis: ${error}`)
      }
 }
-export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis }
+
+const getStationStatusToday = async () => {
+     try {
+          const { data } = await axiosClient.get('admin/station-status-today');
+          return data;
+     } catch (error) {
+          console.log(`[api] Error at get station status today: ${error}`)
+     }
+}
+export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis, getStationStatusToday }
