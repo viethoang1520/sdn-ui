@@ -32,4 +32,13 @@ const getAdminAnalysis = async () => {
           console.log(`[api] Error code at get admin analysis: ${error}`)
      }
 }
-export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis }
+
+const getListTimetable = async () => {
+     try {
+          return await axiosClient.get('schedule/timetable')
+     } catch (error) {
+          console.log(error)
+     }
+}
+
+export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis, getListTimetable }
