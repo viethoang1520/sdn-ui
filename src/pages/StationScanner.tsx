@@ -19,7 +19,7 @@ const playBeep = () => {
 }
 
 export default function StationScanner() {
-     const [listStation, setListStation] = useState()
+     const [listStation, setListStation] = useState([])
      const [stationSelect, setStationSelect] = useState()
      const [modeStation, setModeStation] = useState('IN')
      const [buttonDisabled, setButtonDisabled] = useState(false)
