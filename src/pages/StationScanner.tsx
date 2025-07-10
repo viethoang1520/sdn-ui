@@ -48,33 +48,34 @@ export default function StationScanner() {
                          },
                          async (decodedText, decodedResult) => {
                               playBeep()
-                              if (!stationSelect) {
-                                   toast.error('Vui lòng chọn trạm')
-                                   html5QrCode.pause()
-                                   return
-                              }
                               html5QrCode.pause()
-                              //CHECKIN
-                              if (modeStation === 'IN') {
-                                   const { data } = await checkinStation(decodedText, stationSelect)
-                                   console.log(data);
-                                   if (data.errorCode === 'SUCCESS') {
-                                        toast.success(data.message)
-                                   } else {
-                                        toast.error(data.message)
+                              try {
+                                   if (!stationSelect) {
+                                        toast.error('Vui lòng chọn trạm')
+                                        return
                                    }
-                                   //CHECKOUT
-                              } else if (modeStation === 'OUT') {
-                                   const { data } = await checkoutStation(decodedText, stationSelect)
-                                   if (data.errorCode === 'SUCCESS') {
-                                        toast.success(data.message)
-                                   } else {
-                                        toast.error(data.message)
+                                   if (modeStation === 'IN') {
+                                        const { data } = await checkinStation(decodedText, stationSelect);
+                                        if (data.errorCode === 'SUCCESS') {
+                                             toast.success(data.message)
+                                        } else {
+                                             toast.error(data.message)
+                                        }
+                                   } else if (modeStation === 'OUT') {
+                                        const { data } = await checkoutStation(decodedText, stationSelect);
+                                        if (data.errorCode === 'SUCCESS') {
+                                             toast.success(data.message)
+                                        } else {
+                                             toast.error(data.message)
+                                        }
                                    }
+                              } catch (e) {
+                                   toast.error('QR không hợp lệ');
+                              } finally {
+                                   setTimeout(() => {
+                                        html5QrCode.resume()
+                                   }, 2000)
                               }
-                              setTimeout(() => {
-                                   html5QrCode.resume()
-                              }, 2000)
                          },
                          (errorMessage) => {
                               // console.log(`Scan error: ${errorMessage}`)
