@@ -39,13 +39,13 @@ function App() {
           </Route>
           <Route element={<AdminAuth />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/station-scanner" element={<StationScanner />} />
           </Route>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/train-schedule" element={<TrainSchedule />} />
           <Route path="/payment/success" element={<SuccessPayment />} />
           <Route path="/payment/cancel" element={<ErrorPayment />} />
           <Route path="/403" element={<ForbiddenPage />} />
-          <Route path="/station-scanner" element={<StationScanner />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </MainLayout>

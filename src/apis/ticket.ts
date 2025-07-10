@@ -21,17 +21,17 @@ const purchaseTicketByRoute = async (routes, userId) => {
      }
 }
 
-const checkinStation = async (ticketId) => {
+const checkinStation = async (ticketId, stationId) => {
      try {
-          return await axiosClient.post('ticket/checkin', { ticketId })
+          return await axiosClient.post('ticket/checkin', { ticketId, stationId })
      } catch (error) {
           console.log(error)
      }
 }
 
-const checkoutStation = async (ticketId) => {
+const checkoutStation = async (ticketId, stationId) => {
      try {
-          return await axiosClient.post('ticket/checkout', { ticketId })
+          return await axiosClient.post('ticket/checkout', { ticketId, stationId })
      } catch (error) {
           console.log(error)
      }

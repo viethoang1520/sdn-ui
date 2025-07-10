@@ -1,6 +1,15 @@
-import React, { useEffect } from 'react'
+import { getListStation } from '@/apis/station'
+import { checkinStation, checkoutStation } from '@/apis/ticket'
+import { Button } from '@/components/ui/button'
+import {
+     Select,
+     SelectContent,
+     SelectItem,
+     SelectTrigger,
+     SelectValue,
+} from "@/components/ui/select"
 import { Html5Qrcode } from 'html5-qrcode'
-import { checkinStation } from '@/apis/ticket'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import beepSound from '../../public/beep-313342.mp3'
 
@@ -10,6 +19,19 @@ const playBeep = () => {
 }
 
 export default function StationScanner() {
+     const [listStation, setListStation] = useState([])
+     const [stationSelect, setStationSelect] = useState()
+     const [modeStation, setModeStation] = useState('IN')
+     const [buttonDisabled, setButtonDisabled] = useState(false)
+     const [stationSelectDisabled, setStationSelectDisabled] = useState(false)
+
+     useEffect(() => {
+          const fetchData = async () => {
+               const { data } = await getListStation()
+               if (data) setListStation(data)
+          }
+          fetchData()
+     }, [])
      useEffect(() => {
           const qrRegionId = "qr-reader"
           const html5QrCode = new Html5Qrcode(qrRegionId)
@@ -26,19 +48,36 @@ export default function StationScanner() {
                          },
                          async (decodedText, decodedResult) => {
                               playBeep()
+                              if (!stationSelect) {
+                                   toast.error('Vui lòng chọn trạm')
+                                   html5QrCode.pause()
+                                   return
+                              }
                               html5QrCode.pause()
-                              const { data } = await checkinStation(decodedText)
-                              if (data.errorCode === 'SUCCESS') {
-                                   toast.success(data.message)
-                              } else {
-                                   toast.error('Error')
+                              //CHECKIN
+                              if (modeStation === 'IN') {
+                                   const { data } = await checkinStation(decodedText, stationSelect)
+                                   console.log(data);
+                                   if (data.errorCode === 'SUCCESS') {
+                                        toast.success(data.message)
+                                   } else {
+                                        toast.error(data.message)
+                                   }
+                                   //CHECKOUT
+                              } else if (modeStation === 'OUT') {
+                                   const { data } = await checkoutStation(decodedText, stationSelect)
+                                   if (data.errorCode === 'SUCCESS') {
+                                        toast.success(data.message)
+                                   } else {
+                                        toast.error(data.message)
+                                   }
                               }
                               setTimeout(() => {
                                    html5QrCode.resume()
-                              }, 3000)
+                              }, 2000)
                          },
                          (errorMessage) => {
-                              console.log(`Scan error: ${errorMessage}`)
+                              // console.log(`Scan error: ${errorMessage}`)
                          }
                     )
                }
@@ -47,12 +86,44 @@ export default function StationScanner() {
           return () => {
                html5QrCode.stop().catch((err) => console.log("Stop error", err))
           }
-     }, [])
+     }, [stationSelect, modeStation])
+
+     const onChangeStation = (value) => {
+          setStationSelectDisabled(true)
+          setStationSelect(value)
+          setTimeout(() => setStationSelectDisabled(false), 2000)
+     }
+
+     const handleToggleMode = () => {
+          setButtonDisabled(true)
+          setModeStation(modeStation === 'IN' ? 'OUT' : 'IN')
+          setTimeout(() => setButtonDisabled(false), 2000)
+     }
 
      return (
           <div>
-               <div className='text-center'>
-                    <h2>Scan QR Code</h2>
+               <div className='flex justify-center gap-4 mt-4'>
+                    <Select onValueChange={onChangeStation} disabled={stationSelectDisabled}>
+                         <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Lựa chọn nhà ga" />
+                         </SelectTrigger>
+                         <SelectContent>
+                              {listStation?.map((station, index) => (
+                                   <SelectItem key={station?._id || index} value={station?._id}>{station?.name}</SelectItem>
+                              ))}
+                         </SelectContent>
+                    </Select>
+
+                    <Button
+                         onClick={handleToggleMode}
+                         className={`${modeStation === 'IN' ? 'bg-green-600' : 'bg-red-500'}`}
+                         disabled={buttonDisabled}
+                    >
+                         {modeStation}
+                    </Button>
+               </div>
+               <div className='text-center mt-6 mb-24'>
+                    <h1 className='text-3xl mb-2'>Quét mã QR vé</h1>
                     <div id="qr-reader" className='m-auto' style={{ width: "400px", height: "300px" }}></div>
                </div>
           </div>
