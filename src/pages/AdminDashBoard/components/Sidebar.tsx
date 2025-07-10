@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { BarChart, CreditCard, Users, FileText, Settings, LogOut, Timer } from "lucide-react";
+import { BarChart, CreditCard, Users, FileText, Settings, LogOut, Timer, ScanQrCode } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface SidebarProps {
   activeTab: string;
@@ -57,6 +58,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, language }) 
         <Timer className="mr-2 h-4 w-4" />
         {language === "vi" ? "Lịch trình" : "Schedule"}
       </Button>
+
+      <Link to='/station-scanner'>
+        <Button
+          variant={activeTab === "schedule" ? "default" : "ghost"}
+          className="w-full justify-start"
+          onClick={() => setActiveTab("schedule")}
+        >
+          <ScanQrCode className="mr-2 h-4 w-4" />
+          {language === "vi" ? "Quét QR vé" : "QR Ticket Scanner"}
+        </Button>
+      </Link>
     </nav>
     <div className="mt-auto space-y-1">
       <Button variant="ghost" className="w-full justify-start">
