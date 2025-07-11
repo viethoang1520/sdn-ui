@@ -12,6 +12,7 @@ import Header from "./components/Header"
 import ReportsTab from "./components/ReportsTab"
 import Sidebar from "./components/Sidebar"
 import UserApprovalTab from "./components/UserApprovalTab"
+import ScheduleManagement from "./components/ScheduleManagement";
 
 interface DashboardMetric {
   title: string
@@ -54,8 +55,6 @@ const AdminDashboard = () => {
   const [userApprovals, setUserApprovals] = useState<UserApproval[]>()
   const [dataAnalysis, setDataAnalysis] = useState(null)
   const [stationStatus, setStationStatus] = useState<StationStatus[]>([])
-
-  console.log(dataAnalysis);
 
   // Mock data for dashboard metrics
   const metrics: DashboardMetric[] = [
@@ -192,6 +191,10 @@ const AdminDashboard = () => {
           {/* Reports Tab */}
           {activeTab === "reports" && (
             <ReportsTab stations={stationStatus.map(s => s.name)} language={language} />
+          )}
+
+          {activeTab === 'schedule' && (
+            <ScheduleManagement />
           )}
         </main>
       </div>

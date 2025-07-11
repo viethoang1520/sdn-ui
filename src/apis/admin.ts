@@ -41,4 +41,12 @@ const getStationStatusToday = async () => {
           console.log(`[api] Error at get station status today: ${error}`)
      }
 }
-export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis, getStationStatusToday }
+const getListTimetable = async () => {
+     try {
+          return await axiosClient.get('schedule/timetable')
+     } catch (error) {
+          console.log(error)
+     }
+}
+
+export { getListApproval, approveApplication, rejectApplication, getAdminAnalysis, getStationStatusToday, getListTimetable }
