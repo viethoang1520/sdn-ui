@@ -15,6 +15,7 @@ import TicketPurchaseSystem from "./pages/TicketPurchaseSystem/TicketPurchaseSys
 import TrainSchedule from "./pages/TrainSchedule/TrainSchedule"
 import UserDashboard from "./pages/UserDashboard/UserDashboard"
 import { useUserStore } from "./store/userStore"
+import StationScanner from "./pages/StationScanner"
 
 function App() {
   const fetchUser = useUserStore((state) => state.fetchUser)
@@ -27,25 +28,28 @@ function App() {
   }, [])
 
   return (
-    <MainLayout>
-      <Toaster richColors position="top-center" />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route element={<RequireAuth />}>
-          <Route path="/user-dashboard" element={<UserDashboard />} />
-          <Route path="/ticket-purchase" element={<TicketPurchaseSystem />} />
-        </Route>
-        <Route element={<AdminAuth />}>
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        </Route>
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/train-schedule" element={<TrainSchedule />} />
-        <Route path="/payment/success" element={<SuccessPayment />} />
-        <Route path="/payment/cancel" element={<ErrorPayment />} />
-        <Route path="/403" element={<ForbiddenPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </MainLayout>
+    <>
+      <MainLayout>
+        <Toaster richColors position="top-center" />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/ticket-purchase" element={<TicketPurchaseSystem />} />
+          </Route>
+          <Route element={<AdminAuth />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/station-scanner" element={<StationScanner />} />
+          </Route>
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/train-schedule" element={<TrainSchedule />} />
+          <Route path="/payment/success" element={<SuccessPayment />} />
+          <Route path="/payment/cancel" element={<ErrorPayment />} />
+          <Route path="/403" element={<ForbiddenPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </MainLayout>
+    </>
   )
 }
 

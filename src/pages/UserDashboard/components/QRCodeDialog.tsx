@@ -1,7 +1,8 @@
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import React from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { AlertCircle } from "lucide-react"
+import QRCode from "react-qr-code"
 
 interface TicketItem {
   id: string;
@@ -28,7 +29,7 @@ const QRCodeDialog: React.FC<QRCodeDialogProps> = ({ open, ticket, onClose }) =>
       {ticket && (
         <div className="flex flex-col items-center space-y-4">
           <div className="bg-white p-4 rounded-lg border">
-            <img src={ticket.qrCode} alt="QR Code" className="w-64 h-64" />
+            <QRCode value={ticket?.id} size={256} />
           </div>
           <div className="text-center space-y-1">
             <p className="font-medium">{ticket.type} - {ticket.id}</p>

@@ -5,7 +5,7 @@ type Ticket = {
      quantity: number
 }
 
-const purchaseTicketByType = async ({ userId, tickets } : {userId: string, tickets: Ticket[]}) => {
+const purchaseTicketByType = async ({ userId, tickets }: { userId: string, tickets: Ticket[] }) => {
      try {
           return await axiosClient.post('purchase/type', { userId, tickets })
      } catch (error) {
@@ -15,10 +15,26 @@ const purchaseTicketByType = async ({ userId, tickets } : {userId: string, ticke
 
 const purchaseTicketByRoute = async (routes, userId) => {
      try {
-          return await axiosClient.post('purchase/route', {routes, userId})
+          return await axiosClient.post('purchase/route', { routes, userId })
      } catch (error) {
           console.log(error)
      }
 }
 
-export { purchaseTicketByType, purchaseTicketByRoute }
+const checkinStation = async (ticketId, stationId) => {
+     try {
+          return await axiosClient.post('ticket/checkin', { ticketId, stationId })
+     } catch (error) {
+          console.log(error)
+     }
+}
+
+const checkoutStation = async (ticketId, stationId) => {
+     try {
+          return await axiosClient.post('ticket/checkout', { ticketId, stationId })
+     } catch (error) {
+          console.log(error)
+     }
+}
+
+export { purchaseTicketByType, purchaseTicketByRoute, checkinStation, checkoutStation }
