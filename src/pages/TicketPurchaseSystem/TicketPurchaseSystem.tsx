@@ -36,6 +36,13 @@ import { v4 as uuidv4 } from "uuid";
 
 type PaymentMethod = "VNPay" | "visa" | "momo";
 
+  interface Station {
+    _id: string;
+    name: string;
+    distance: number;
+    // Add other station properties if needed
+  }
+  
 interface TimeLimitedQuantities {
   daily: number;
   "three-day": number;
@@ -80,12 +87,7 @@ export default function TicketPurchaseSystem() {
       "three-day": 0,
       monthly: 0,
     });
-  interface Station {
-    _id: string;
-    name: string;
-    distance: number;
-    // Add other station properties if needed
-  }
+
 
   function calculateRoutePrice(
     origin: Station | null,
