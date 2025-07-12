@@ -1,6 +1,6 @@
 import { login, register } from "@/apis/authentication"
 import { useUserStore } from "@/store/userStore"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import {
@@ -17,6 +17,12 @@ import SocialLogin from "./components/SocialLogin"
 
 const AuthPage = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) navigate('/')
+  }, [navigate])
+  
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
