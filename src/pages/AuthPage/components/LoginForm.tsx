@@ -1,9 +1,9 @@
 import React from "react";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
-import { Checkbox } from "../../../components/ui/checkbox";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 interface LoginFormProps {
   loginData: { username: string; password: string };
@@ -26,65 +26,75 @@ const LoginForm: React.FC<LoginFormProps> = ({
   setRememberMe,
   onSubmit,
 }) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <div className="space-y-2">
-      <Label htmlFor="login-username">Tên đăng nhập</Label>
-      <div className="relative">
-        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+  <form onSubmit={onSubmit}>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="username">Tên đăng nhập</Label>
         <Input
-          id="login-username"
-          placeholder="Nhập username của bạn"
-          className="pl-10"
+          id="username"
+          placeholder="Nhập tên đăng nhập"
+          required
           value={loginData.username}
           onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-          required
         />
       </div>
-    </div>
-    <div className="space-y-2">
-      <Label htmlFor="login-password">Mật khẩu</Label>
-      <div className="relative">
-        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-        <Input
-          id="login-password"
-          type={showPassword ? "text" : "password"}
-          placeholder="Nhập mật khẩu"
-          className="pl-10 pr-10"
-          value={loginData.password}
-          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-          required
-        />
-        <button
-          type="button"
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Mật khẩu</Label>
+          <a
+            href="#"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Quên mật khẩu?
+          </a>
+        </div>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Nhập mật khẩu"
+            required
+            value={loginData.password}
+            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+          />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
       </div>
-    </div>
-    <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
         <Checkbox
           id="remember"
           checked={rememberMe}
-          onCheckedChange={(checked) => setRememberMe(!!checked)}
+          onCheckedChange={(checked) => setRememberMe(checked as boolean)}
         />
-        <Label htmlFor="remember" className="text-sm text-gray-600">
+        <Label
+          htmlFor="remember"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           Ghi nhớ đăng nhập
         </Label>
       </div>
-      <button
-        type="button"
-        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isLoading}
       >
-        Quên mật khẩu?
-      </button>
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Đang xử lý...
+          </>
+        ) : (
+          'Đăng nhập'
+        )}
+      </Button>
     </div>
-    <Button type="submit" className="w-full" disabled={isLoading}>
-      {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
-    </Button>
   </form>
 );
 
-export default LoginForm; 
+export default LoginForm;

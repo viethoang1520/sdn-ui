@@ -191,6 +191,13 @@ export default function TicketPurchaseSystem() {
 
       if (validRoutes.length > 0) {
         const { data } = await purchaseTicketByRoute(validRoutes, user._id, true)
+
+        if (data.data.discount === 100) {
+          setCurrentStep(currentStep + 2)
+          setShowConfirmDialog(false);
+          return
+        }
+
         if (data.errorCode === 0) {
           setDataPayment({
             transaction_id: data.data.transaction._id,
@@ -824,12 +831,12 @@ export default function TicketPurchaseSystem() {
                       <div className="flex justify-between items-center py-2 border-b border-gray-200">
                         <span className="text-gray-600 font-medium">
                           {ticketCategory === "route"
-                            ? "Tuyến Đường"
+                            ? ""
                             : "Phạm Vi"}
                         </span>
                         <span className="font-semibold text-gray-800">
                           {ticketCategory === "route"
-                            ? `${originStation} → ${destinationStation}`
+                            ? ` `
                             : "Tất cả các ga"}
                         </span>
                       </div>
