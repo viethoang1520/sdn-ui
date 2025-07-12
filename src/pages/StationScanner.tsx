@@ -32,6 +32,7 @@ export default function StationScanner() {
           }
           fetchData()
      }, [])
+     
      useEffect(() => {
           const qrRegionId = "qr-reader"
           const html5QrCode = new Html5Qrcode(qrRegionId)
@@ -49,6 +50,7 @@ export default function StationScanner() {
                          async (decodedText, decodedResult) => {
                               playBeep()
                               html5QrCode.pause()
+                              console.log(decodedResult);
                               try {
                                    if (!stationSelect) {
                                         toast.error('Vui lòng chọn trạm')
@@ -70,15 +72,17 @@ export default function StationScanner() {
                                         }
                                    }
                               } catch (e) {
-                                   toast.error('QR không hợp lệ');
+                                   console.log(e)
+                                   toast.error('QR không hợp lệ')
                               } finally {
                                    setTimeout(() => {
                                         html5QrCode.resume()
                                    }, 2000)
                               }
                          },
+                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
                          (errorMessage) => {
-                              // console.log(`Scan error: ${errorMessage}`)
+                              // console.log(errorMessage)
                          }
                     )
                }
