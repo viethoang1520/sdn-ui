@@ -274,7 +274,7 @@ export default function TicketPurchaseSystem() {
         }));
       if (validRoutes.length > 0) {
         const { data } = await purchaseTicketByRoute(validRoutes, user._id, false)
-        setDraftPrice({ price: Math.round(data.data.transaction.total_price), discount: data.data.discount })
+        setDraftPrice({ price: Math.round(data.data.transaction.origin_price), discount: data.data.discount })
         if (data.errorCode === 0) {
           setDataPayment({
             transaction_id: data.data.transaction._id,
@@ -305,7 +305,7 @@ export default function TicketPurchaseSystem() {
         confirm: false
       };
       const { data } = await purchaseTicketByType(ticketInfo)
-      setDraftPrice({ price: Math.round(data.data.transaction.total_price), discount: data.data.discount })
+      setDraftPrice({ price: Math.round(data.data.origin_price), discount: data.data.discount })
 
       if (!data.error) {
         setDataPayment({
