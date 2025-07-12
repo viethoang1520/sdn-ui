@@ -25,8 +25,7 @@ export default function ScheduleManagement() {
 
      const fetchListTimetable = async () => {
           const data = await getListTimetable()
-          // data.data.data là mảng như ảnh, cần map lại cho đúng TimeSlot
-          const mapped = (data.data.data || []).map((item: any) => ({
+          const mapped = (data.data.data || []).map((item) => ({
                id: item._id,
                time: item.start_time,
                title: item.title || "",
