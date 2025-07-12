@@ -8,14 +8,22 @@ import LollipopChart from "./LollipopChart";
 
 // Removed unused DashboardMetric and commented-out dataAnalysis interface
 
+interface StationStatus {
+  name: string;
+  count: number;
+}
 interface DashboardTabProps {
-  metrics: any[]; // metrics prop is not used, but kept for prop compatibility
-  stations: string[];
+  metrics: any[];
+  stations: StationStatus[];
   language: "vi" | "en";
-  dataAnalysis: any; // Adjust type as needed based on your data structure
+  dataAnalysis: any;
 }
 
+const DEFAULT_VISIBLE = 6;
+
 const DashboardTab: React.FC<DashboardTabProps> = ({ metrics, stations, language, dataAnalysis }) => {
+  const [showAllStations, setShowAllStations] = React.useState(false);
+  const visibleStations = showAllStations ? stations : stations.slice(0, DEFAULT_VISIBLE);
   // Removed unused console.log
   return (
     <div className="space-y-6">
@@ -99,20 +107,26 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ metrics, stations, language
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {stations.slice(0, 6).map((station, index) => (
+            {visibleStations.map((station, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">{station}</p>
-                  <p className="text-sm text-muted-foreground">{Math.floor(Math.random() * 100)} {language === "vi" ? "hành khách" : "passengers"}</p>
+                  <p className="font-medium">{station.name}</p>
+                  <p className="text-sm text-muted-foreground">{station.count} {language === "vi" ? "hành khách" : "passengers"}</p>
                 </div>
-                <Progress value={Math.floor(Math.random() * 100)} className="w-24" />
+                <Progress value={station.count} max={100} className="w-24" />
               </div>
             ))}
           </div>
         </CardContent>
         <CardFooter>
-          <Button variant="outline" className="w-full">
-            {language === "vi" ? "Xem tất cả các ga" : "View all stations"}
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setShowAllStations(!showAllStations)}
+          >
+            {showAllStations
+              ? (language === "vi" ? "Thu gọn" : "Show less")
+              : (language === "vi" ? "Xem tất cả các ga" : "View all stations")}
           </Button>
         </CardFooter>
       </Card>
