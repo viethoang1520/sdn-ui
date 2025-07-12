@@ -76,28 +76,15 @@ interface RouteSelection {
 export default function TicketPurchaseSystem() {
   const user = useUserStore((state) => state.user)
   const [currentStep, setCurrentStep] = useState(1)
-  const [ticketCategory, setTicketCategory] = useState<TicketCategory | null>(
-    null
-  )
-  const [timeLimitedQuantities, setTimeLimitedQuantities] =
-    useState<TimeLimitedQuantities>({
-      daily: 0,
-      "three-day": 0,
-      monthly: 0,
-    })
-
+  const [ticketCategory, setTicketCategory] = useState<TicketCategory | null>(null)
+  const [timeLimitedQuantities, setTimeLimitedQuantities] = useState<TimeLimitedQuantities>({ daily: 0, "three-day": 0, monthly: 0, })
   const [draftPrice, setDraftPrice] = useState({ price: 0, discount: 0 })
   const [originStation, setOriginStation] = useState<Station | null>(null)
-  const [destinationStation, setDestinationStation] = useState<Station | null>(
-    null
-  )
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null
-  )
+  const [destinationStation, setDestinationStation] = useState<Station | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [dataPayment, setDataPayment] = useState(null)
   const [listStation, setListStation] = useState([])
-
   const [routeSelections, setRouteSelections] = useState<RouteSelection[]>([
     { id: uuidv4(), origin: null, destination: null, quantity: 1 },
   ])
@@ -139,19 +126,15 @@ export default function TicketPurchaseSystem() {
       return "Vé một lượt"
     }
 
-    const selected = [];
+    const selected = []
     if (timeLimitedQuantities.daily > 0)
-      selected.push(
-        `${timeLimitedQuantities.daily} ${timeLimitedTickets.daily.name}`
-      )
+      selected.push(`${timeLimitedQuantities.daily} ${timeLimitedTickets.daily.name}`)
+
     if (timeLimitedQuantities["three-day"] > 0)
-      selected.push(
-        `${timeLimitedQuantities["three-day"]} ${timeLimitedTickets["three-day"].name}`
-      )
+      selected.push(`${timeLimitedQuantities["three-day"]} ${timeLimitedTickets["three-day"].name}`)
+
     if (timeLimitedQuantities.monthly > 0)
-      selected.push(
-        `${timeLimitedQuantities.monthly} ${timeLimitedTickets.monthly.name}`
-      )
+      selected.push(`${timeLimitedQuantities.monthly} ${timeLimitedTickets.monthly.name}`)
 
     return selected.join(", ")
   }
@@ -205,6 +188,7 @@ export default function TicketPurchaseSystem() {
           end_station_id: route.destination._id,
           quantity: route.quantity,
         }))
+
       if (validRoutes.length > 0) {
         const { data } = await purchaseTicketByRoute(validRoutes, user._id, true)
         if (data.errorCode === 0) {
@@ -236,12 +220,14 @@ export default function TicketPurchaseSystem() {
         ].filter(Boolean),
         confirm: true
       }
+
       const { data } = await purchaseTicketByType(ticketInfo)
       if (data.data.discount === 100) {
         setCurrentStep(currentStep + 2)
         setShowConfirmDialog(false);
         return
       }
+
       if (!data.error) {
         setDataPayment({
           transaction_id: data.data.transaction._id,
@@ -277,7 +263,7 @@ export default function TicketPurchaseSystem() {
             transaction_id: data.data.transaction._id,
             items: data.data.tickets,
             total_price: Math.round(data.data.transaction.total_price),
-          });
+          })
         }
       }
     }
@@ -300,7 +286,8 @@ export default function TicketPurchaseSystem() {
           },
         ].filter(Boolean),
         confirm: false
-      };
+      }
+
       const { data } = await purchaseTicketByType(ticketInfo)
       setDraftPrice({ price: Math.round(data.data.origin_price), discount: data.data.discount })
 
@@ -320,23 +307,22 @@ export default function TicketPurchaseSystem() {
     type: keyof TimeLimitedQuantities,
     value: string
   ) => {
-    const numValue = value === "" ? 0 : Number.parseInt(value);
+    const numValue = value === "" ? 0 : Number.parseInt(value)
     setTimeLimitedQuantities((prev) => ({
       ...prev,
       [type]: Math.max(0, numValue),
-    }));
-  };
+    }))
+  }
 
   const resetForm = () => {
-    setCurrentStep(1);
-    setTicketCategory(null);
-    setTimeLimitedQuantities({ daily: 0, "three-day": 0, monthly: 0 });
-    setOriginStation(null);
-    setDestinationStation(null);
-    setPaymentMethod(null);
-  };
+    setCurrentStep(1)
+    setTicketCategory(null)
+    setTimeLimitedQuantities({ daily: 0, "three-day": 0, monthly: 0 })
+    setOriginStation(null)
+    setDestinationStation(null)
+    setPaymentMethod(null)
+  }
 
-  // Handler to update a field in a route selection
   const handleRouteChange = (
     idx: number,
     field: "origin" | "destination" | "quantity",
@@ -354,21 +340,19 @@ export default function TicketPurchaseSystem() {
           }
           : route
       )
-    );
-  };
+    )
+  }
 
-  // Add a new route selection
   const addRoute = () => {
     setRouteSelections((prev) => [
       ...prev,
       { id: uuidv4(), origin: null, destination: null, quantity: 1 },
-    ]);
-  };
+    ])
+  }
 
-  // Remove a route selection by index
   const removeRoute = (idx: number) => {
-    setRouteSelections((prev) => prev.filter((_, i) => i !== idx));
-  };
+    setRouteSelections((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
@@ -1062,5 +1046,5 @@ export default function TicketPurchaseSystem() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
