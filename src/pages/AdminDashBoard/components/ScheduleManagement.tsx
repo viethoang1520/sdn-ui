@@ -1,17 +1,15 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { getListTimetable } from "@/apis/admin"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MoreHorizontal, Edit, Trash2, Filter, ChevronDown } from "lucide-react"
-import { getListTimetable } from "@/apis/admin"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Edit, Filter, MoreHorizontal, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface TimeSlot {
      id: string
@@ -265,60 +263,31 @@ export default function ScheduleManagement() {
                                              className="col-span-3 border-gray-300"
                                         />
                                    </div>
-                                   <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="title" className="text-right font-medium text-black">
-                                             Tiêu đề
-                                        </Label>
-                                        <Input
-                                             id="title"
-                                             value={editTitle}
-                                             onChange={(e) => setEditTitle(e.target.value)}
-                                             className="col-span-3 border-gray-300"
-                                        />
-                                   </div>
-                                   <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="type" className="text-right font-medium text-black">
-                                             Loại
-                                        </Label>
-                                        <Select value={editType} onValueChange={(value: TimeSlot["type"]) => setEditType(value)}>
-                                             <SelectTrigger className="col-span-3 border-gray-300">
-                                                  <SelectValue />
-                                             </SelectTrigger>
-                                             <SelectContent>
-                                                  <SelectItem value="MEETING">Họp</SelectItem>
-                                                  <SelectItem value="WORK">Làm việc</SelectItem>
-                                                  <SelectItem value="BREAK">Nghỉ</SelectItem>
-                                                  <SelectItem value="EVENT">Sự kiện</SelectItem>
-                                             </SelectContent>
-                                        </Select>
-                                   </div>
-                                   <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="status" className="text-right font-medium text-black">
-                                             Trạng thái
-                                        </Label>
-                                        <Select value={editStatus} onValueChange={(value: TimeSlot["status"]) => setEditStatus(value)}>
-                                             <SelectTrigger className="col-span-3 border-gray-300">
-                                                  <SelectValue />
-                                             </SelectTrigger>
-                                             <SelectContent>
-                                                  <SelectItem value="ACTIVE">Đang hoạt động</SelectItem>
-                                                  <SelectItem value="INACTIVE">Không hoạt động</SelectItem>
-                                                  <SelectItem value="PENDING">Đang chờ</SelectItem>
-                                             </SelectContent>
-                                        </Select>
-                                   </div>
+                                   <Label htmlFor="status" className="text-right font-medium text-black">
+                                        Trạng thái
+                                   </Label>
+                                   <Select value={editStatus} onValueChange={(value: TimeSlot["status"]) => setEditStatus(value)}>
+                                        <SelectTrigger className="col-span-3 border-gray-300">
+                                             <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                             <SelectItem value="ACTIVE">Đang hoạt động</SelectItem>
+                                             <SelectItem value="INACTIVE">Không hoạt động</SelectItem>
+                                             <SelectItem value="PENDING">Đang chờ</SelectItem>
+                                        </SelectContent>
+                                   </Select>
                               </div>
-                              <DialogFooter>
-                                   <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="border-gray-300">
-                                        Hủy
-                                   </Button>
-                                   <Button onClick={handleSaveEdit} className="bg-black text-white hover:bg-gray-800">
-                                        Lưu thay đổi
-                                   </Button>
-                              </DialogFooter>
-                         </DialogContent>
-                    </Dialog>
-               </div>
+                         <DialogFooter>
+                              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="border-gray-300">
+                                   Hủy
+                              </Button>
+                              <Button onClick={handleSaveEdit} className="bg-black text-white hover:bg-gray-800">
+                                   Lưu thay đổi
+                              </Button>
+                         </DialogFooter>
+                    </DialogContent>
+               </Dialog>
           </div>
+          </div >
      )
 }
