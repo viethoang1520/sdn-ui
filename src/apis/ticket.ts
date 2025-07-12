@@ -5,17 +5,17 @@ type Ticket = {
      quantity: number
 }
 
-const purchaseTicketByType = async ({ userId, tickets }: { userId: string, tickets: Ticket[] }) => {
+const purchaseTicketByType = async ({ userId, tickets, confirm }: { userId: string, tickets: Ticket[], confirm: boolean }) => {
      try {
-          return await axiosClient.post('purchase/type', { userId, tickets })
+          return await axiosClient.post('purchase/type', { userId, tickets, confirm })
      } catch (error) {
           console.log(`Error at purchase ticket by type api: ${error}`)
      }
 }
 
-const purchaseTicketByRoute = async (routes, userId) => {
+const purchaseTicketByRoute = async (routes, userId, confirm) => {
      try {
-          return await axiosClient.post('purchase/route', { routes, userId })
+          return await axiosClient.post('purchase/route', { routes, userId, confirm })
      } catch (error) {
           console.log(error)
      }
