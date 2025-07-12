@@ -3,7 +3,6 @@ import { getListStation } from "@/apis/station"
 import { purchaseTicketByRoute, purchaseTicketByType } from "@/apis/ticket"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
 import {
   Dialog,
   DialogContent,
@@ -65,14 +64,13 @@ const timeLimitedTickets = {
     price: 300000,
     description: "Không giới hạn số lượt đi trong 30 ngày",
   },
-};
+}
 
-// Route selection type
 interface RouteSelection {
-  id: string;
-  origin: Station | null;
-  destination: Station | null;
-  quantity: number;
+  id: string
+  origin: Station | null
+  destination: Station | null
+  quantity: number
 }
 
 export default function TicketPurchaseSystem() {
@@ -89,46 +87,45 @@ export default function TicketPurchaseSystem() {
     })
 
   const [draftPrice, setDraftPrice] = useState({ price: 0, discount: 0 })
-  const [originStation, setOriginStation] = useState<Station | null>(null);
+  const [originStation, setOriginStation] = useState<Station | null>(null)
   const [destinationStation, setDestinationStation] = useState<Station | null>(
     null
-  );
+  )
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
-  );
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [dataPayment, setDataPayment] = useState(null);
-  const [listStation, setListStation] = useState([]);
+  )
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [dataPayment, setDataPayment] = useState(null)
+  const [listStation, setListStation] = useState([])
 
-  // State for multiple route selections
   const [routeSelections, setRouteSelections] = useState<RouteSelection[]>([
     { id: uuidv4(), origin: null, destination: null, quantity: 1 },
-  ]);
+  ])
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await getListStation();
+      const { data } = await getListStation()
       if (data) {
-        setListStation(data);
+        setListStation(data)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   const getStepName = (step: number) => {
     switch (step) {
       case 1:
-        return "Chọn Loại Vé";
+        return "Chọn Loại Vé"
       case 2:
-        return ticketCategory === "route" ? "Chọn Ga" : "Chọn Vé";
+        return ticketCategory === "route" ? "Chọn Ga" : "Chọn Vé"
       case 3:
-        return "Thanh Toán";
+        return "Thanh Toán"
       case 4:
-        return "Xác Nhận";
+        return "Xác Nhận"
       default:
-        return "";
+        return ""
     }
-  };
+  }
 
   const steps = [
     { id: 1, name: "Chọn Loại Vé", active: currentStep >= 1 },
@@ -139,27 +136,27 @@ export default function TicketPurchaseSystem() {
 
   const getSelectedTicketsDisplay = () => {
     if (ticketCategory === "route") {
-      return "Vé một lượt";
+      return "Vé một lượt"
     }
 
     const selected = [];
     if (timeLimitedQuantities.daily > 0)
       selected.push(
         `${timeLimitedQuantities.daily} ${timeLimitedTickets.daily.name}`
-      );
+      )
     if (timeLimitedQuantities["three-day"] > 0)
       selected.push(
         `${timeLimitedQuantities["three-day"]} ${timeLimitedTickets["three-day"].name}`
-      );
+      )
     if (timeLimitedQuantities.monthly > 0)
       selected.push(
         `${timeLimitedQuantities.monthly} ${timeLimitedTickets.monthly.name}`
-      );
+      )
 
-    return selected.join(", ");
-  };
+    return selected.join(", ")
+  }
 
-  const canContinueStep1 = () => ticketCategory !== null;
+  const canContinueStep1 = () => ticketCategory !== null
 
   const canContinueStep2 = () => {
     if (ticketCategory === "route") {
@@ -169,16 +166,16 @@ export default function TicketPurchaseSystem() {
           route.destination &&
           route.origin._id !== route.destination._id &&
           route.quantity > 0
-      );
+      )
     }
     return (
       timeLimitedQuantities.daily > 0 ||
       timeLimitedQuantities["three-day"] > 0 ||
       timeLimitedQuantities.monthly > 0
-    );
-  };
+    )
+  }
 
-  const canContinueStep3 = () => paymentMethod !== null;
+  const canContinueStep3 = () => paymentMethod !== null
 
   const handleNext = async () => {
     if (currentStep === 2) {
@@ -207,7 +204,7 @@ export default function TicketPurchaseSystem() {
           start_station_id: route.origin._id,
           end_station_id: route.destination._id,
           quantity: route.quantity,
-        }));
+        }))
       if (validRoutes.length > 0) {
         const { data } = await purchaseTicketByRoute(validRoutes, user._id, true)
         if (data.errorCode === 0) {
@@ -215,7 +212,7 @@ export default function TicketPurchaseSystem() {
             transaction_id: data.data.transaction._id,
             items: data.data.tickets,
             total_price: Math.round(data.data.transaction.total_price),
-          });
+          })
         }
       }
     }
@@ -238,7 +235,7 @@ export default function TicketPurchaseSystem() {
           },
         ].filter(Boolean),
         confirm: true
-      };
+      }
       const { data } = await purchaseTicketByType(ticketInfo)
       if (data.data.discount === 100) {
         setCurrentStep(currentStep + 2)
@@ -250,13 +247,13 @@ export default function TicketPurchaseSystem() {
           transaction_id: data.data.transaction._id,
           items: data.data.tickets,
           total_price: Math.round(data.data.transaction.total_price),
-        });
-        toast.message(data.message);
+        })
+        toast.message(data.message)
       }
     }
-    setShowConfirmDialog(false);
-    setCurrentStep(currentStep + 1);
-  };
+    setShowConfirmDialog(false)
+    setCurrentStep(currentStep + 1)
+  }
 
   const handleNextStepTwo = async () => {
     if (ticketCategory === "route") {
@@ -271,10 +268,10 @@ export default function TicketPurchaseSystem() {
           start_station_id: route.origin._id,
           end_station_id: route.destination._id,
           quantity: route.quantity,
-        }));
+        }))
       if (validRoutes.length > 0) {
         const { data } = await purchaseTicketByRoute(validRoutes, user._id, false)
-        setDraftPrice({ price: Math.round(data.data.transaction.origin_price), discount: data.data.discount })
+        setDraftPrice({ price: Math.round(data.data.origin_price), discount: data.data.discount })
         if (data.errorCode === 0) {
           setDataPayment({
             transaction_id: data.data.transaction._id,
@@ -312,12 +309,12 @@ export default function TicketPurchaseSystem() {
           transaction_id: data.data.transaction._id,
           items: data.data.tickets,
           total_price: Math.round(data.data.transaction.total_price),
-        });
+        })
       }
     }
-  };
+  }
 
-  const handleBack = () => setCurrentStep(currentStep - 1);
+  const handleBack = () => setCurrentStep(currentStep - 1)
 
   const handleQuantityChange = (
     type: keyof TimeLimitedQuantities,
