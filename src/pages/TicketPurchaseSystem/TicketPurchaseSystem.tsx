@@ -1,26 +1,26 @@
-import { payment } from "@/apis/payment";
-import { getListStation } from "@/apis/station";
-import { purchaseTicketByRoute, purchaseTicketByType } from "@/apis/ticket";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { payment } from "@/apis/payment"
+import { getListStation } from "@/apis/station"
+import { purchaseTicketByRoute, purchaseTicketByType } from "@/apis/ticket"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useUserStore } from "@/store/userStore";
-import type { TicketCategory } from "@/types";
+} from "@/components/ui/select"
+import { useUserStore } from "@/store/userStore"
+import type { TicketCategory } from "@/types"
 import {
   Check,
   ChevronLeft,
@@ -29,24 +29,23 @@ import {
   CreditCard,
   MapPin,
   Train,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
+} from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+import { v4 as uuidv4 } from "uuid"
 
-type PaymentMethod = "VNPay" | "visa" | "momo";
+type PaymentMethod = "VNPay" | "visa" | "momo"
 
-  interface Station {
-    _id: string;
-    name: string;
-    distance: number;
-    // Add other station properties if needed
-  }
-  
+interface Station {
+  _id: string
+  name: string
+  distance: number
+}
+
 interface TimeLimitedQuantities {
-  daily: number;
-  "three-day": number;
-  monthly: number;
+  daily: number
+  "three-day": number
+  monthly: number
 }
 
 const timeLimitedTickets = {
@@ -65,131 +64,82 @@ const timeLimitedTickets = {
     price: 300000,
     description: "Không giới hạn số lượt đi trong 30 ngày",
   },
-};
+}
 
-// Route selection type
 interface RouteSelection {
-  id: string;
-  origin: Station | null;
-  destination: Station | null;
-  quantity: number;
+  id: string
+  origin: Station | null
+  destination: Station | null
+  quantity: number
 }
 
 export default function TicketPurchaseSystem() {
-  const user = useUserStore((state) => state.user);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [ticketCategory, setTicketCategory] = useState<TicketCategory | null>(
-    null
-  );
-  const [timeLimitedQuantities, setTimeLimitedQuantities] =
-    useState<TimeLimitedQuantities>({
-      daily: 0,
-      "three-day": 0,
-      monthly: 0,
-    });
-
-
-  function calculateRoutePrice(
-    origin: Station | null,
-    destination: Station | null
-  ): number | null {
-    if (!origin || !destination) return null;
-
-    const originDistance = origin.distance ?? 0;
-    const destinationDistance = destination.distance ?? 0;
-
-    const diff = Math.abs(destinationDistance - originDistance);
-
-    if (diff <= 7) {
-      return 7000;
-    } else {
-      return diff * 1000;
-    }
-  }
-  const [originStation, setOriginStation] = useState<Station | null>(null);
-  const [destinationStation, setDestinationStation] = useState<Station | null>(
-    null
-  );
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null
-  );
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [dataPayment, setDataPayment] = useState(null);
-  const [listStation, setListStation] = useState([]);
-
-  // State for multiple route selections
+  const user = useUserStore((state) => state.user)
+  const [currentStep, setCurrentStep] = useState(1)
+  const [ticketCategory, setTicketCategory] = useState<TicketCategory | null>(null)
+  const [timeLimitedQuantities, setTimeLimitedQuantities] = useState<TimeLimitedQuantities>({ daily: 0, "three-day": 0, monthly: 0, })
+  const [draftPrice, setDraftPrice] = useState({ price: 0, discount: 0 })
+  const [originStation, setOriginStation] = useState<Station | null>(null)
+  const [destinationStation, setDestinationStation] = useState<Station | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [dataPayment, setDataPayment] = useState(null)
+  const [listStation, setListStation] = useState([])
   const [routeSelections, setRouteSelections] = useState<RouteSelection[]>([
     { id: uuidv4(), origin: null, destination: null, quantity: 1 },
-  ]);
+  ])
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await getListStation();
+      const { data } = await getListStation()
       if (data) {
-        setListStation(data);
+        setListStation(data)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   const getStepName = (step: number) => {
     switch (step) {
       case 1:
-        return "Chọn Loại Vé";
+        return "Chọn Loại Vé"
       case 2:
-        return ticketCategory === "route" ? "Chọn Ga" : "Chọn Vé";
+        return ticketCategory === "route" ? "Chọn Ga" : "Chọn Vé"
       case 3:
-        return "Thanh Toán";
+        return "Thanh Toán"
       case 4:
-        return "Xác Nhận";
+        return "Xác Nhận"
       default:
-        return "";
+        return ""
     }
-  };
+  }
 
   const steps = [
     { id: 1, name: "Chọn Loại Vé", active: currentStep >= 1 },
     { id: 2, name: getStepName(2), active: currentStep >= 2 },
     { id: 3, name: "Thanh Toán", active: currentStep >= 3 },
     { id: 4, name: "Xác Nhận", active: currentStep >= 4 },
-  ];
-
-  const calculateTotal = () => {
-    if (ticketCategory === "route") {
-      return 15000;
-    }
-
-    return (
-      timeLimitedQuantities.daily * timeLimitedTickets.daily.price +
-      timeLimitedQuantities["three-day"] *
-        timeLimitedTickets["three-day"].price +
-      timeLimitedQuantities.monthly * timeLimitedTickets.monthly.price
-    );
-  };
+  ]
 
   const getSelectedTicketsDisplay = () => {
     if (ticketCategory === "route") {
-      return "Vé một lượt";
+      return "Vé một lượt"
     }
 
-    const selected = [];
+    const selected = []
     if (timeLimitedQuantities.daily > 0)
-      selected.push(
-        `${timeLimitedQuantities.daily} ${timeLimitedTickets.daily.name}`
-      );
+      selected.push(`${timeLimitedQuantities.daily} ${timeLimitedTickets.daily.name}`)
+
     if (timeLimitedQuantities["three-day"] > 0)
-      selected.push(
-        `${timeLimitedQuantities["three-day"]} ${timeLimitedTickets["three-day"].name}`
-      );
+      selected.push(`${timeLimitedQuantities["three-day"]} ${timeLimitedTickets["three-day"].name}`)
+
     if (timeLimitedQuantities.monthly > 0)
-      selected.push(
-        `${timeLimitedQuantities.monthly} ${timeLimitedTickets.monthly.name}`
-      );
+      selected.push(`${timeLimitedQuantities.monthly} ${timeLimitedTickets.monthly.name}`)
 
-    return selected.join(", ");
-  };
+    return selected.join(", ")
+  }
 
-  const canContinueStep1 = () => ticketCategory !== null;
+  const canContinueStep1 = () => ticketCategory !== null
 
   const canContinueStep2 = () => {
     if (ticketCategory === "route") {
@@ -199,34 +149,33 @@ export default function TicketPurchaseSystem() {
           route.destination &&
           route.origin._id !== route.destination._id &&
           route.quantity > 0
-      );
+      )
     }
     return (
       timeLimitedQuantities.daily > 0 ||
       timeLimitedQuantities["three-day"] > 0 ||
       timeLimitedQuantities.monthly > 0
-    );
-  };
+    )
+  }
 
-  const canContinueStep3 = () => paymentMethod !== null;
+  const canContinueStep3 = () => paymentMethod !== null
 
   const handleNext = async () => {
     if (currentStep === 2) {
-      setShowConfirmDialog(true);
+      setShowConfirmDialog(true)
+      handleNextStepTwo()
     } else if (currentStep === 3) {
-      console.log(dataPayment);
-      const { data } = await payment(dataPayment);
+      const { data } = await payment(dataPayment)
       if (data.checkoutUrl) {
-        window.open(data.checkoutUrl);
+        window.open(data.checkoutUrl)
       }
     } else {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(currentStep + 1)
     }
-  };
+  }
 
   const handleConfirmTicket = async () => {
     if (ticketCategory === "route") {
-      console.log(routeSelections);
       const validRoutes = routeSelections
         .filter(
           (route) =>
@@ -238,16 +187,16 @@ export default function TicketPurchaseSystem() {
           start_station_id: route.origin._id,
           end_station_id: route.destination._id,
           quantity: route.quantity,
-        }));
-      console.log("validRoutes: ", validRoutes);
+        }))
+
       if (validRoutes.length > 0) {
-        const { data } = await purchaseTicketByRoute(validRoutes, user._id);
+        const { data } = await purchaseTicketByRoute(validRoutes, user._id, true)
         if (data.errorCode === 0) {
           setDataPayment({
             transaction_id: data.data.transaction._id,
             items: data.data.tickets,
             total_price: Math.round(data.data.transaction.total_price),
-          });
+          })
         }
       }
     }
@@ -269,77 +218,141 @@ export default function TicketPurchaseSystem() {
             quantity: timeLimitedQuantities.monthly,
           },
         ].filter(Boolean),
-      };
-      console.log("ticketInfo: ", ticketInfo);
-      const { data } = await purchaseTicketByType(ticketInfo);
+        confirm: true
+      }
+
+      const { data } = await purchaseTicketByType(ticketInfo)
+      if (data.data.discount === 100) {
+        setCurrentStep(currentStep + 2)
+        setShowConfirmDialog(false);
+        return
+      }
+
       if (!data.error) {
         setDataPayment({
           transaction_id: data.data.transaction._id,
           items: data.data.tickets,
           total_price: Math.round(data.data.transaction.total_price),
-        });
-        toast.message(data.message);
+        })
+        toast.message(data.message)
       }
     }
-    setShowConfirmDialog(false);
-    setCurrentStep(currentStep + 1);
-  };
+    setShowConfirmDialog(false)
+    setCurrentStep(currentStep + 1)
+  }
 
-  const handleBack = () => setCurrentStep(currentStep - 1);
+  const handleNextStepTwo = async () => {
+    if (ticketCategory === "route") {
+      const validRoutes = routeSelections
+        .filter(
+          (route) =>
+            route.origin &&
+            route.destination &&
+            route.origin._id !== route.destination._id
+        )
+        .map((route) => ({
+          start_station_id: route.origin._id,
+          end_station_id: route.destination._id,
+          quantity: route.quantity,
+        }))
+      if (validRoutes.length > 0) {
+        const { data } = await purchaseTicketByRoute(validRoutes, user._id, false)
+        setDraftPrice({ price: Math.round(data.data.origin_price), discount: data.data.discount })
+        if (data.errorCode === 0) {
+          setDataPayment({
+            transaction_id: data.data.transaction._id,
+            items: data.data.tickets,
+            total_price: Math.round(data.data.transaction.total_price),
+          })
+        }
+      }
+    }
+
+    if (ticketCategory === "time-limited") {
+      const ticketInfo = {
+        userId: user._id,
+        tickets: [
+          timeLimitedQuantities.daily > 0 && {
+            type: "1day",
+            quantity: timeLimitedQuantities.daily,
+          },
+          timeLimitedQuantities["three-day"] > 0 && {
+            type: "3days",
+            quantity: timeLimitedQuantities["three-day"],
+          },
+          timeLimitedQuantities.monthly > 0 && {
+            type: "1month",
+            quantity: timeLimitedQuantities.monthly,
+          },
+        ].filter(Boolean),
+        confirm: false
+      }
+
+      const { data } = await purchaseTicketByType(ticketInfo)
+      setDraftPrice({ price: Math.round(data.data.origin_price), discount: data.data.discount })
+
+      if (!data.error) {
+        setDataPayment({
+          transaction_id: data.data.transaction._id,
+          items: data.data.tickets,
+          total_price: Math.round(data.data.transaction.total_price),
+        })
+      }
+    }
+  }
+
+  const handleBack = () => setCurrentStep(currentStep - 1)
 
   const handleQuantityChange = (
     type: keyof TimeLimitedQuantities,
     value: string
   ) => {
-    const numValue = value === "" ? 0 : Number.parseInt(value);
+    const numValue = value === "" ? 0 : Number.parseInt(value)
     setTimeLimitedQuantities((prev) => ({
       ...prev,
       [type]: Math.max(0, numValue),
-    }));
-  };
+    }))
+  }
 
   const resetForm = () => {
-    setCurrentStep(1);
-    setTicketCategory(null);
-    setTimeLimitedQuantities({ daily: 0, "three-day": 0, monthly: 0 });
-    setOriginStation(null);
-    setDestinationStation(null);
-    setPaymentMethod(null);
-  };
+    setCurrentStep(1)
+    setTicketCategory(null)
+    setTimeLimitedQuantities({ daily: 0, "three-day": 0, monthly: 0 })
+    setOriginStation(null)
+    setDestinationStation(null)
+    setPaymentMethod(null)
+  }
 
-  // Handler to update a field in a route selection
   const handleRouteChange = (
     idx: number,
     field: "origin" | "destination" | "quantity",
-    value: any
+    value: unknown
   ) => {
     setRouteSelections((prev) =>
       prev.map((route, i) =>
         i === idx
           ? {
-              ...route,
-              [field]:
-                field === "quantity"
-                  ? Number(value)
-                  : listStation.find((s) => s._id === value),
-            }
+            ...route,
+            [field]:
+              field === "quantity"
+                ? Number(value)
+                : listStation.find((s) => s._id === value),
+          }
           : route
       )
-    );
-  };
+    )
+  }
 
-  // Add a new route selection
   const addRoute = () => {
     setRouteSelections((prev) => [
       ...prev,
       { id: uuidv4(), origin: null, destination: null, quantity: 1 },
-    ]);
-  };
+    ])
+  }
 
-  // Remove a route selection by index
   const removeRoute = (idx: number) => {
-    setRouteSelections((prev) => prev.filter((_, i) => i !== idx));
-  };
+    setRouteSelections((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
@@ -356,27 +369,24 @@ export default function TicketPurchaseSystem() {
                 <div key={step.id} className="flex items-center flex-1">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                        currentStep >= step.id
-                          ? "bg-white text-blue-600 shadow-lg"
-                          : "bg-white/20 text-white/60"
-                      }`}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${currentStep >= step.id
+                        ? "bg-white text-blue-600 shadow-lg"
+                        : "bg-white/20 text-white/60"
+                        }`}
                     >
                       {step.id}
                     </div>
                     <span
-                      className={`mt-2 text-xs font-medium text-center leading-tight ${
-                        currentStep === step.id ? "text-white" : "text-white/70"
-                      }`}
+                      className={`mt-2 text-xs font-medium text-center leading-tight ${currentStep === step.id ? "text-white" : "text-white/70"
+                        }`}
                     >
                       {step.name}
                     </span>
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${
-                        currentStep > step.id ? "bg-white" : "bg-white/20"
-                      }`}
+                      className={`flex-1 h-1 mx-4 rounded-full transition-all ${currentStep > step.id ? "bg-white" : "bg-white/20"
+                        }`}
                     />
                   )}
                 </div>
@@ -400,20 +410,18 @@ export default function TicketPurchaseSystem() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Route Ticket */}
                   <Card
-                    className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                      ticketCategory === "route"
-                        ? "ring-4 ring-blue-500 border-blue-500 shadow-xl bg-blue-50"
-                        : "hover:shadow-lg border-gray-200"
-                    }`}
+                    className={`cursor-pointer transition-all duration-300 hover:scale-105 ${ticketCategory === "route"
+                      ? "ring-4 ring-blue-500 border-blue-500 shadow-xl bg-blue-50"
+                      : "hover:shadow-lg border-gray-200"
+                      }`}
                     onClick={() => setTicketCategory("route")}
                   >
                     <CardContent className="p-8 text-center">
                       <div
-                        className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                          ticketCategory === "route"
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
+                        className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${ticketCategory === "route"
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                          }`}
                       >
                         <Train className="w-8 h-8" />
                       </div>
@@ -431,20 +439,18 @@ export default function TicketPurchaseSystem() {
 
                   {/* Time-Limited Ticket */}
                   <Card
-                    className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                      ticketCategory === "time-limited"
-                        ? "ring-4 ring-purple-500 border-purple-500 shadow-xl bg-purple-50"
-                        : "hover:shadow-lg border-gray-200"
-                    }`}
+                    className={`cursor-pointer transition-all duration-300 hover:scale-105 ${ticketCategory === "time-limited"
+                      ? "ring-4 ring-purple-500 border-purple-500 shadow-xl bg-purple-50"
+                      : "hover:shadow-lg border-gray-200"
+                      }`}
                     onClick={() => setTicketCategory("time-limited")}
                   >
                     <CardContent className="p-8 text-center">
                       <div
-                        className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                          ticketCategory === "time-limited"
-                            ? "bg-purple-500 text-white"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
+                        className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${ticketCategory === "time-limited"
+                          ? "bg-purple-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                          }`}
                       >
                         <Clock className="w-8 h-8" />
                       </div>
@@ -732,11 +738,10 @@ export default function TicketPurchaseSystem() {
                     className="space-y-4"
                   >
                     <Card
-                      className={`cursor-pointer transition-all ${
-                        paymentMethod === "VNPay"
-                          ? "ring-2 ring-blue-500 bg-blue-50"
-                          : "hover:shadow-md"
-                      }`}
+                      className={`cursor-pointer transition-all ${paymentMethod === "VNPay"
+                        ? "ring-2 ring-blue-500 bg-blue-50"
+                        : "hover:shadow-md"
+                        }`}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-4">
@@ -801,20 +806,11 @@ export default function TicketPurchaseSystem() {
                 </div>
 
                 {/* QR Code */}
-                <div className="flex justify-center">
-                  <div className="w-56 h-56 bg-black rounded-2xl flex items-center justify-center shadow-2xl">
-                    <div className="w-48 h-48 bg-white rounded-xl grid grid-cols-12 gap-px p-3">
-                      {Array.from({ length: 144 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-full h-full ${
-                            Math.random() > 0.5 ? "bg-black" : "bg-white"
-                          } rounded-sm`}
-                        />
-                      ))}
-                    </div>
+                {/* <div className="flex justify-center">
+                  <div className="w-56 h-56 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+                    <QRCode value='test value' size={256} />
                   </div>
-                </div>
+                </div> */}
 
                 <Card className="max-w-md mx-auto bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 shadow-xl">
                   <CardContent className="p-6">
@@ -842,7 +838,8 @@ export default function TicketPurchaseSystem() {
                           Giá Vé
                         </span>
                         <span className="font-bold text-blue-600 text-lg">
-                          {calculateTotal().toLocaleString()} VND
+                          <span>{draftPrice?.price - draftPrice?.price * draftPrice?.discount / 100} VND </span>
+                          <span className="line-through">({draftPrice?.price.toLocaleString()} VND)</span>
                         </span>
                       </div>
                       <div className="flex justify-between items-center py-2">
@@ -904,7 +901,7 @@ export default function TicketPurchaseSystem() {
                                 route.origin._id !== route.destination._id &&
                                 route.quantity > 0
                             )
-                            .map((route, index) => (
+                            .map((route) => (
                               <div
                                 key={route.id}
                                 className="flex justify-between ml-4"
@@ -922,23 +919,18 @@ export default function TicketPurchaseSystem() {
                             Tổng giá:
                           </span>
                           <span className="font-bold text-blue-600">
-                            {routeSelections
-                              .filter(
-                                (route) =>
-                                  route.origin &&
-                                  route.destination &&
-                                  route.origin._id !== route.destination._id &&
-                                  route.quantity > 0
-                              )
-                              .reduce((total, route) => {
-                                const routePrice = calculateRoutePrice(
-                                  route.origin!,
-                                  route.destination!
-                                );
-                                return total + route.quantity * routePrice;
-                              }, 0)
-                              .toLocaleString()}{" "}
-                            VND
+                            {
+                              draftPrice.discount > 0
+                                ?
+                                (
+                                  <div className="flex flex-col">
+                                    <span className="line-through text-xs text-zinc-500 opacity-80">{draftPrice?.price.toLocaleString()} VND</span >
+                                    <span className="">{(draftPrice?.price - draftPrice?.price * draftPrice?.discount / 100)} VND</span >
+                                  </div>
+                                )
+                                :
+                                (<span>{draftPrice?.price} VND</span >)
+                            }
                           </span>
                         </div>
                       </div>
@@ -982,7 +974,18 @@ export default function TicketPurchaseSystem() {
                             Tổng giá:
                           </span>
                           <span className="font-bold text-blue-600">
-                            {calculateTotal().toLocaleString()} VND
+                            {
+                              draftPrice.discount > 0
+                                ?
+                                (
+                                  <div className="flex flex-col">
+                                    <span className="line-through text-xs text-zinc-500 opacity-80">{draftPrice?.price.toLocaleString()} VND</span >
+                                    <span className="">{(draftPrice?.price - draftPrice?.price * draftPrice?.discount / 100)} VND</span >
+                                  </div>
+                                )
+                                :
+                                (<span>{draftPrice?.price} VND</span >)
+                            }
                           </span>
                         </div>
                       </div>
@@ -1043,5 +1046,5 @@ export default function TicketPurchaseSystem() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
