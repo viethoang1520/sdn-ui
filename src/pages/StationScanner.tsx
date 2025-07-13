@@ -124,7 +124,7 @@ export default function StationScanner() {
                     </Button>
                </div>
                <div className='text-center mt-6 mb-24'>
-                    <h1 className='text-3xl mb-2'>Quét mã QR vé</h1>
+                    <h1 className='text-3xl mb-2 font-bold opacity-80'>Quét mã QR vé</h1>
                     <div id="qr-reader" className='m-auto' style={{ width: "400px", height: "300px" }}></div>
                </div>
           </div>

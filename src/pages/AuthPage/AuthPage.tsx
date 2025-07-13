@@ -1,6 +1,6 @@
 import { login, register } from "@/apis/authentication"
 import { useUserStore } from "@/store/userStore"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import {
@@ -17,6 +17,12 @@ import SocialLogin from "./components/SocialLogin"
 
 const AuthPage = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) navigate('/')
+  }, [navigate])
+  
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -38,30 +44,31 @@ const AuthPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    const response = await login(loginData)
-    console.log(response.data.isAdmin);
-    const token = response.data.token
-    const isAdmin = response.data.isAdmin
+    try {
+      const response = await login(loginData)
+      const token = response.data.token
+      const isAdmin = response.data.isAdmin
 
-    if (token) {
-      if (isAdmin) {
-        toast.success('Welcome admin!')
-        localStorage.setItem('token', token)
-        fetchUser()
-        navigate('/admin-dashboard')
-        setIsLoading(false)
+      if (token) {
+        if (isAdmin) {
+          toast.success('Welcome admin!')
+          localStorage.setItem('token', token)
+          fetchUser()
+          navigate('/admin-dashboard')
+        } else {
+          toast.success('Login success!')
+          localStorage.setItem('token', token)
+          fetchUser()
+          navigate('/')
+        }
       } else {
-        toast.success('Login success!')
-        localStorage.setItem('token', token)
-        fetchUser()
-        setIsLoading(false)
-        navigate('/')
+        toast.error(response.data.message)
       }
-
-    } else {
-      toast.error(response.data.message)
-      setIsLoading(false)
+    } catch (error) {
+      console.log(error)
+      toast.error("Đăng nhập thất bại!")
     }
+    setIsLoading(false)
   }
 
   const handleRegister = async (e: React.FormEvent) => {

@@ -61,9 +61,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, language }) 
 
       <Link to='/station-scanner'>
         <Button
-          variant={activeTab === "schedule" ? "default" : "ghost"}
+          variant={activeTab === "qr" ? "default" : "ghost"}
           className="w-full justify-start"
-          onClick={() => setActiveTab("schedule")}
+          onClick={() => setActiveTab("qr")}
         >
           <ScanQrCode className="mr-2 h-4 w-4" />
           {language === "vi" ? "Quét QR vé" : "QR Ticket Scanner"}
