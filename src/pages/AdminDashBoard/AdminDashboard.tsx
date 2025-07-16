@@ -13,6 +13,7 @@ import ReportsTab from "./components/ReportsTab"
 import Sidebar from "./components/Sidebar"
 import UserApprovalTab from "./components/UserApprovalTab"
 import ScheduleManagement from "./components/ScheduleManagement";
+import AutoCreateSchedule from "./components/AutoCreateSchedule";
 
 interface DashboardMetric {
   title: string
@@ -195,6 +196,10 @@ const AdminDashboard = () => {
 
           {activeTab === 'schedule' && (
             <ScheduleManagement />
+          )}
+
+          {activeTab === 'auto-schedule' && (
+            <AutoCreateSchedule />
           )}
         </main>
       </div>
