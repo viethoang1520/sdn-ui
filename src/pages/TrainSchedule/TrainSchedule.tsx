@@ -27,7 +27,46 @@ const TrainSchedule = () => {
       if (selectedDirection) {
         const { data } = await getScheduleByDirection(selectedDirection)
         if (data.errorCode == 0) {
-          setScheduleData(data.route)
+          console.log("Schedule data:", data.route)
+
+          // Lọc ra các schedule có status khác 0 (INACTIVE)
+          const activeSchedules = data.route.filter(item => {
+            // Kiểm tra các trường hợp có thể có của cấu trúc dữ liệu
+            if (item.start_time && typeof item.start_time.status !== 'undefined') {
+              return item.start_time.status !== 0;
+            }
+            if (item.status !== undefined) {
+              return item.status !== 0;
+            }
+            // Nếu không tìm thấy trường status, giữ lại item
+            return true;
+          });
+
+          console.log("Active schedules:", activeSchedules)
+
+          // Sắp xếp lịch trình theo thời gian tăng dần
+          const sortedSchedules = [...activeSchedules].sort((a, b) => {
+            // Lấy thời gian từ các đối tượng
+            const timeA = a.start_time?.start_time || "";
+            const timeB = b.start_time?.start_time || "";
+
+            // Chuyển đổi thời gian sang số phút từ 00:00
+            const toMinutes = (timeStr) => {
+              const [hours, minutes] = timeStr.split(":").map(Number);
+              // Nếu giờ là từ 0-3, coi như nó thuộc về ngày tiếp theo (sau nửa đêm)
+              // để đảm bảo thứ tự đúng: 22:00, 23:00, 00:15, 01:30...
+              if (hours >= 0 && hours < 4) {
+                return (hours + 24) * 60 + minutes; // Thêm 24h để đảm bảo sau 23:xx
+              }
+              return hours * 60 + minutes;
+            };
+
+            // So sánh thời gian dựa trên số phút
+            return toMinutes(timeA) - toMinutes(timeB);
+          });
+
+          console.log("Sorted schedules:", sortedSchedules);
+          setScheduleData(sortedSchedules);
         }
       }
     }
@@ -67,6 +106,10 @@ const TrainSchedule = () => {
       arrivalTime: "Giờ đến dự kiến",
       close: "Đóng",
       noDirection: "Vui lòng chọn hướng tuyến",
+      morning: "Buổi sáng (4:00 - 11:59)",
+      afternoon: "Buổi chiều (12:00 - 17:59)",
+      evening: "Buổi tối (18:00 - 23:59)",
+      night: "Đêm khuya (0:00 - 3:59)",
     },
     en: {
       title: "Metro Train Schedule",
@@ -82,6 +125,10 @@ const TrainSchedule = () => {
       arrivalTime: "Estimated Arrival",
       close: "Close",
       noDirection: "Please select a direction",
+      morning: "Morning (4:00 - 11:59)",
+      afternoon: "Afternoon (12:00 - 17:59)",
+      evening: "Evening (18:00 - 23:59)",
+      night: "Late Night (0:00 - 3:59)",
     },
   };
 

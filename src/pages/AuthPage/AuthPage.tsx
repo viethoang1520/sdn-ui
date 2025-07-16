@@ -13,7 +13,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
 import LoginForm from "./components/LoginForm"
 import RegisterForm from "./components/RegisterForm"
-import SocialLogin from "./components/SocialLogin"
 
 const AuthPage = () => {
   const navigate = useNavigate()
@@ -93,16 +92,6 @@ const AuthPage = () => {
     }
   }
 
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked")
-    // Implement Google OAuth logic here
-  }
-
-  const handleFacebookLogin = () => {
-    console.log("Facebook login clicked")
-    // Implement Facebook OAuth logic here
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-4 pt-10">
       <Card className="w-full max-w-md shadow-xl">
@@ -145,10 +134,6 @@ const AuthPage = () => {
               />
             </TabsContent>
           </Tabs>
-          <SocialLogin
-            onGoogleLogin={handleGoogleLogin}
-            onFacebookLogin={handleFacebookLogin}
-          />
         </CardContent>
       </Card>
     </div>

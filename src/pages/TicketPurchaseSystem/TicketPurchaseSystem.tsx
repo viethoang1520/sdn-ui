@@ -79,7 +79,9 @@ export default function TicketPurchaseSystem() {
   const [ticketCategory, setTicketCategory] = useState<TicketCategory | null>(null)
   const [timeLimitedQuantities, setTimeLimitedQuantities] = useState<TimeLimitedQuantities>({ daily: 0, "three-day": 0, monthly: 0, })
   const [draftPrice, setDraftPrice] = useState({ price: 0, discount: 0 })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [originStation, setOriginStation] = useState<Station | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [destinationStation, setDestinationStation] = useState<Station | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
