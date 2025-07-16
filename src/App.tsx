@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Outlet } from 'react-router-dom'
 import { AdminAuth } from './Auth/AdminAuth'
 import { RequireAuth } from "./Auth/RequireAuth"
 import { Toaster } from "./components/ui/sonner"
@@ -25,21 +25,26 @@ function App() {
     if (token) {
       fetchUser()
     }
-  }, [])
+  }, [fetchUser])
 
   return (
     <>
-      <MainLayout>
-        <Toaster richColors position="top-center" />
-        <Routes>
+      <Toaster richColors position="top-center" />
+      <Routes>
+        {/* Admin routes - outside of MainLayout */}
+        <Route element={<AdminAuth />}>
+          <Route path="/station-scanner" element={<StationScanner />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
+
+        {/* Other routes with MainLayout */}
+        <Route element={<MainLayout>
+          <Outlet />
+        </MainLayout>}>
           <Route path="/" element={<Home />} />
           <Route element={<RequireAuth />}>
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/ticket-purchase" element={<TicketPurchaseSystem />} />
-          </Route>
-          <Route element={<AdminAuth />}>
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/station-scanner" element={<StationScanner />} />
           </Route>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/train-schedule" element={<TrainSchedule />} />
@@ -47,8 +52,8 @@ function App() {
           <Route path="/payment/cancel" element={<ErrorPayment />} />
           <Route path="/403" element={<ForbiddenPage />} />
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </MainLayout>
+        </Route>
+      </Routes>
     </>
   )
 }
