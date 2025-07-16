@@ -27,28 +27,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, language }) 
         {language === "vi" ? "Tổng quan" : "Dashboard"}
       </Button>
       <Button
-        variant={activeTab === "fare-management" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActiveTab("fare-management")}
-      >
-        <CreditCard className="mr-2 h-4 w-4" />
-        {language === "vi" ? "Quản lý giá vé" : "Fare Management"}
-      </Button>
-      <Button
         variant={activeTab === "user-approval" ? "default" : "ghost"}
         className="w-full justify-start"
         onClick={() => setActiveTab("user-approval")}
       >
         <Users className="mr-2 h-4 w-4" />
         {language === "vi" ? "Phê duyệt đơn" : "User Approval"}
-      </Button>
-      <Button
-        variant={activeTab === "reports" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActiveTab("reports")}
-      >
-        <FileText className="mr-2 h-4 w-4" />
-        {language === "vi" ? "Báo cáo" : "Reports"}
       </Button>
       <Button
         variant={activeTab === "schedule" ? "default" : "ghost"}
