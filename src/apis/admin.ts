@@ -41,6 +41,14 @@ const getAdminAnalysis = async () => {
      }
 }
 
+const getStationStatusToday = async () => {
+     try {
+          const { data } = await axiosClient.get('admin/station-status-today');
+          return data;
+     } catch (error) {
+          console.log(`[api] Error at get station status today: ${error}`)
+     }
+}
 const getListTimetable = async () => {
      try {
           return await axiosClient.get('schedule/timetable')
@@ -49,7 +57,6 @@ const getListTimetable = async () => {
      }
 }
 
-// Không cần API deleteTimetableById nữa vì chúng ta đang sử dụng updateTimetableById để vô hiệu hóa
 const deleteTimetableById = async (id: string) => {
      try {
           return await axiosClient.delete(`schedule/timetable/${id}`)
@@ -90,3 +97,4 @@ export {
      updateTimetableById,
      restoreTimetableById
 }
+
