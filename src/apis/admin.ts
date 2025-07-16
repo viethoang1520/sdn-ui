@@ -92,6 +92,7 @@ export {
      rejectApplication,
      getAdminAnalysis,
      getListTimetable,
+     getStationStatusToday,
      // Giữ lại export cho tương thích ngược với code cũ
      deleteTimetableById,
      updateTimetableById,
