@@ -15,11 +15,12 @@ export default function AutoCreateSchedule() {
      const [firstTrain, setFirstTrain] = useState<string>("06:50");
      const [isLoading, setIsLoading] = useState<boolean>(false);
 
-     // Tính toán chuyến cuối cùng
+     // Tính toán chuyến cuối cùng (không tính chuyến cuối thực sự, mà tính chuyến áp cuối)
      const calculateLastTrain = (): string => {
           try {
                const [hours, minutes] = firstTrain.split(":").map(Number);
-               const totalMinutes = parseInt(trainTrips) * parseInt(gapTime);
+               // Trừ đi 1 chuyến để không lấy chuyến cuối cùng
+               const totalMinutes = (parseInt(trainTrips) - 1) * parseInt(gapTime);
 
                let lastTrainHours = Math.floor(totalMinutes / 60) + hours;
                let lastTrainMinutes = (totalMinutes % 60) + minutes;
@@ -213,7 +214,7 @@ export default function AutoCreateSchedule() {
                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                                       </svg>
                                                                  </div>
-                                                                 <span className="ml-2 font-medium text-gray-700">Chuyến cuối cùng</span>
+                                                                 <span className="ml-2 font-medium text-gray-700">Chuyến áp cuối</span>
                                                             </div>
                                                             <span className="font-bold text-lg text-blue-800">{calculateLastTrain()}</span>
                                                        </div>
@@ -242,7 +243,8 @@ export default function AutoCreateSchedule() {
                                                                                 const [startHour, startMinute] = firstTrain.split(":").map(Number);
                                                                                 const startPercent = ((startHour + startMinute / 60) / 24) * 100;
 
-                                                                                const totalHours = (parseInt(trainTrips) * parseInt(gapTime)) / 60;
+                                                                                // Tính toán cho chuyến áp cuối (trừ đi 1 chuyến)
+                                                                                const totalHours = ((parseInt(trainTrips) - 1) * parseInt(gapTime)) / 60;
                                                                                 const endPercent = ((startHour + startMinute / 60 + totalHours) / 24) * 100;
 
                                                                                 // Xử lý trường hợp qua ngày hôm sau
@@ -288,7 +290,7 @@ export default function AutoCreateSchedule() {
                                                                                                </div>
                                                                                           </div>
 
-                                                                                          {/* Chỉ báo chuyến cuối cùng */}
+                                                                                          {/* Chỉ báo chuyến áp cuối */}
                                                                                           <div
                                                                                                className="absolute top-0 bottom-0 w-1 bg-blue-700"
                                                                                                style={{ left: isOvernight ? `${adjustedEndPercent}%` : `${endPercent}%` }}

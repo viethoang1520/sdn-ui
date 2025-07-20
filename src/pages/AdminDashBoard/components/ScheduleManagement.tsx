@@ -233,8 +233,17 @@ export default function ScheduleManagement() {
      const filteredTimeSlots =
           filterStatus === "all" ? timeSlots : timeSlots.filter((slot) => slot.status === filterStatus)
 
-     // Sắp xếp lịch trình theo thời gian tăng dần
-     const sortedTimeSlots = [...filteredTimeSlots].sort((a, b) => {
+     // Lọc bỏ những thời gian trùng lặp và sắp xếp theo thời gian tăng dần
+     const uniqueTimeSlots = filteredTimeSlots.reduce((acc: TimeSlot[], current) => {
+          // Kiểm tra xem đã có thời gian này chưa
+          const existingSlot = acc.find(slot => slot.time === current.time)
+          if (!existingSlot) {
+               acc.push(current)
+          }
+          return acc
+     }, [])
+
+     const sortedTimeSlots = [...uniqueTimeSlots].sort((a, b) => {
           // Chuyển đổi thời gian sang số phút từ 00:00
           const toMinutes = (timeStr: string): number => {
                const [hours, minutes] = timeStr.split(":").map(Number)
