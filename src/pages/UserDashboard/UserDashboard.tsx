@@ -3,12 +3,15 @@ import {
   getUserActiveTickets,
   getUserInformation,
   getUserPurchaseHistory,
+  getUserApplications,
 } from "@/apis/user";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserStore } from "@/store/userStore";
 import React, { useEffect, useState } from "react";
 import AccountInfoTab from "./components/AccountInfoTab";
 import ActiveTicketsTab from "./components/ActiveTicketsTab";
+import ApplicationsHistoryTab from "./components/ApplicationsHistoryTab";
+import ApplicationDetailDialog from "./components/ApplicationDetailDialog";
 import ExemptionDialog from "./components/ExemptionDialog";
 import PurchaseHistoryTab from "./components/PurchaseHistoryTab";
 import QRCodeDialog from "./components/QRCodeDialog";
@@ -67,6 +70,18 @@ interface ActiveTicketItem {
   endStation?: string | null;
 }
 
+interface ApplicationItem {
+  _id: string;
+  user_type?: string;
+  discount?: number;
+  cccd: string;
+  expiry_date?: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  createdAt: string;
+  updatedAt: string;
+  rejection_reason?: string;
+}
+
 const UserDashboard: React.FC<UserDashboardProps> = () => {
   const fetchUser = useUserStore(state => state.fetchUser)
   const user = useUserStore((state) => state.user)
@@ -78,6 +93,8 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
   );
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [showExemptionDialog, setShowExemptionDialog] = useState(false);
+  const [showApplicationDetail, setShowApplicationDetail] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationItem | null>(null);
   const [exemptionForm, setExemptionForm] = useState<{
     priorityGroup: string;
     cccd: string;
@@ -94,7 +111,8 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
   const [apiActiveTickets, setApiActiveTickets] = useState<ActiveTicketItem[]>(
     []
   );
-  
+  const [apiApplications, setApiApplications] = useState<ApplicationItem[]>([]);
+
   const userId = user?._id
 
   const priorityGroups = [
@@ -162,6 +180,38 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     fetchActiveTickets();
   }, [userId]);
 
+  // Fetch user applications
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const res = await getUserApplications();
+        console.log('applications', res.data);
+        if (res && res.data) {
+          setApiApplications(res.data.applications);
+        } else {
+          setApiApplications([]);
+        }
+      } catch {
+        setApiApplications([]);
+      }
+    };
+    fetchApplications();
+  }, [userId]);
+
+  // Function to refresh applications
+  const refreshApplications = async () => {
+    try {
+      const res = await getUserApplications();
+      if (res && res.data && res.data.data) {
+        setApiApplications(res.data.data);
+      } else {
+        setApiApplications([]);
+      }
+    } catch {
+      setApiApplications([]);
+    }
+  };
+
   const handleExemptionSubmit = async () => {
     if (!exemptionForm.priorityGroup || !exemptionForm.cccd) {
       setExemptionStatus({
@@ -197,11 +247,23 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
     setExemptionForm({ priorityGroup: "", cccd: "", validTo: undefined });
     setExemptionStatus({ type: null, message: "" });
     setShowExemptionDialog(false);
-    fetchUser()
+    fetchUser();
+    refreshApplications(); // Refresh applications after successful submission
     toast.success("Đơn đã gửi thành công");
   };
 
   const isFormValid = exemptionForm.priorityGroup !== "" && exemptionForm.cccd !== "";
+
+  // Handlers for application detail dialog
+  const handleShowApplicationDetail = (application: ApplicationItem) => {
+    setSelectedApplication(application);
+    setShowApplicationDetail(true);
+  };
+
+  const handleCloseApplicationDetail = () => {
+    setShowApplicationDetail(false);
+    setSelectedApplication(null);
+  };
 
   return (
     <div className="mt-8">
@@ -224,10 +286,11 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="account">Tài khoản</TabsTrigger>
                 <TabsTrigger value="history">Lịch sử mua vé</TabsTrigger>
                 <TabsTrigger value="tickets">Vé điện tử</TabsTrigger>
+                <TabsTrigger value="applications">Đơn ưu đãi</TabsTrigger>
               </TabsList>
               <TabsContent value="account" className="mt-6">
                 <AccountInfoTab
@@ -251,8 +314,8 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
                         : "-",
                       validTo: ticket.expiryDate
                         ? new Date(ticket.expiryDate).toLocaleDateString(
-                            "vi-VN"
-                          )
+                          "vi-VN"
+                        )
                         : "-",
                       stations:
                         ticket.startStation && ticket.endStation
@@ -262,6 +325,12 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
                     });
                     setShowQRDialog(true);
                   }}
+                />
+              </TabsContent>
+              <TabsContent value="applications" className="mt-6">
+                <ApplicationsHistoryTab
+                  applications={apiApplications}
+                  onShowDetail={handleShowApplicationDetail}
                 />
               </TabsContent>
             </Tabs>
@@ -281,6 +350,11 @@ const UserDashboard: React.FC<UserDashboardProps> = () => {
           handleExemptionSubmit={handleExemptionSubmit}
           isFormValid={isFormValid}
           priorityGroups={priorityGroups}
+        />
+        <ApplicationDetailDialog
+          open={showApplicationDetail}
+          application={selectedApplication}
+          onClose={handleCloseApplicationDetail}
         />
       </div>
     </div>
