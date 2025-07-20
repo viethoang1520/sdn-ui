@@ -19,3 +19,7 @@ export const applyFreeDiscount = async (exemptionForm: any) => {
     cccd: exemptionForm.cccd
   })
 }
+
+export const getApplicationDetails = async (applicationId: string) => {
+  return await axiosClient.get(`application/details/${applicationId}`)
+}
