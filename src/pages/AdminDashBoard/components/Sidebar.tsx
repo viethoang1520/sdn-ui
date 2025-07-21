@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { BarChart, CreditCard, Users, FileText, Settings, LogOut, Timer, ScanQrCode, CalendarClock } from "lucide-react";
+import { BarChart, Users, Settings, LogOut, Timer, ScanQrCode, CalendarClock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface SidebarProps {
@@ -33,6 +33,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, language }) 
       >
         <Users className="mr-2 h-4 w-4" />
         {language === "vi" ? "Phê duyệt đơn" : "User Approval"}
+      </Button>
+      <Button
+        variant={activeTab === "user-management" ? "default" : "ghost"}
+        className="w-full justify-start"
+        onClick={() => setActiveTab("user-management")}
+      >
+        <Users className="mr-2 h-4 w-4" />
+        {language === "vi" ? "Quản lý tài khoản" : "User Management"}
       </Button>
       <Button
         variant={activeTab === "schedule" ? "default" : "ghost"}

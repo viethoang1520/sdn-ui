@@ -14,6 +14,7 @@ import Sidebar from "./components/Sidebar"
 import UserApprovalTab from "./components/UserApprovalTab"
 import ScheduleManagement from "./components/ScheduleManagement";
 import AutoCreateSchedule from "./components/AutoCreateSchedule";
+import UserManagementTab from "./components/UserManagementTab";
 
 interface DashboardMetric {
   title: string
@@ -188,6 +189,10 @@ const AdminDashboard = () => {
           {/* User Approval Tab */}
           {activeTab === "user-approval" && (
             <UserApprovalTab userApprovals={userApprovals} language={language} fetchUserApprove={fetchUserApproval} />
+          )}
+          {/* User Management Tab */}
+          {activeTab === "user-management" && (
+            <UserManagementTab />
           )}
           {/* Reports Tab */}
           {activeTab === "reports" && (

@@ -85,6 +85,32 @@ const restoreTimetableById = async (id: string) => {
      }
 }
 
+const disableUserById = async (userId: string) => {
+     try {
+          return await axiosClient.patch(`admin/disable-user/${userId}`)
+     } catch (error) {
+          console.log(`Error at disable user: ${error}`)
+          throw error
+     }
+}
+
+const enableUserById = async (userId: string) => {
+     try {
+          return await axiosClient.patch(`admin/enable-user/${userId}`)
+     } catch (error) {
+          console.log(`Error at enable user: ${error}`)
+          throw error
+     }
+}
+
+const getAllUsers = async () => {
+  try {
+    return await axiosClient.get('admin/users');
+  } catch (error) {
+    console.log('Error at get all users:', error);
+    throw error;
+  }
+}
 
 export {
      getListApproval,
@@ -96,6 +122,9 @@ export {
      // Giữ lại export cho tương thích ngược với code cũ
      deleteTimetableById,
      updateTimetableById,
-     restoreTimetableById
+     restoreTimetableById,
+     disableUserById, // thêm export mới
+     enableUserById, // thêm export mới
+     getAllUsers
 }
 
