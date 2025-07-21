@@ -17,6 +17,8 @@ interface User {
 const UserManagementTab: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 15;
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -56,6 +58,20 @@ const UserManagementTab: React.FC = () => {
     }
   };
 
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Quản lý tài khoản người dùng</h3>
@@ -63,6 +79,7 @@ const UserManagementTab: React.FC = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>STT</TableHead>
               <TableHead>Tên đăng nhập</TableHead>
               <TableHead>Họ tên</TableHead>
               <TableHead>Email</TableHead>
@@ -72,8 +89,9 @@ const UserManagementTab: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {currentUsers.map((user, idx) => (
               <TableRow key={user._id}>
+                <TableCell>{indexOfFirstUser + idx + 1}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.full_name}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -101,6 +119,18 @@ const UserManagementTab: React.FC = () => {
           </TableBody>
         </Table>
         {loading && <div className="p-4">Đang tải...</div>}
+        {/* Pagination controls */}
+        <div className="flex justify-between items-center p-4">
+          <Button variant="outline" size="sm" onClick={handlePrevPage} disabled={currentPage === 1}>
+            Trang trước
+          </Button>
+          <span>
+            Trang {currentPage} / {totalPages}
+          </span>
+          <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Trang sau
+          </Button>
+        </div>
       </div>
     </div>
   );
