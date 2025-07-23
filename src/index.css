@@ -1,10 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./assets/animations.css";
 
 @custom-variant dark (&:is(.dark *));
 
 body {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 :root {
@@ -109,26 +111,25 @@ body {
 }
 
 .container {
-     max-width: 100%;
-     margin: 0 auto;
-     padding: 0 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
 
-     @media (min-width: 576px) {
-          max-width: 540px;
-     }
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
 
-     @media (min-width: 768px) {
-          max-width: 720px;
-     }
+  @media (min-width: 768px) {
+    max-width: 720px;
+  }
 
-     @media (min-width: 992px) {
-          max-width: 960px;
-     }
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
 
-     @media (min-width: 1200px) {
-          max-width: 1380px;
-     }
-
+  @media (min-width: 1200px) {
+    max-width: 1380px;
+  }
 }
 
 @media (prefers-color-scheme: light) {
