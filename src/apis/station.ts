@@ -12,7 +12,7 @@ interface Station {
 }
 
 // Lấy danh sách tất cả các station
-const getListStation = async (): Promise<Station[]> => {
+const getListStation = async () => {
      try {
           const response = await axiosClient.get('/station');
           return response.data;
