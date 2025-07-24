@@ -89,7 +89,7 @@ export default function StationManagement() {
                     return { min: minDistance, max: maxDistance };
                }
           }
-          return { min: 0.1, max: 0.7 };
+          return { min: 0.1, max: 10 };
      };
 
      useEffect(() => {
@@ -97,20 +97,35 @@ export default function StationManagement() {
      }, [])
 
      useEffect(() => {
-          if (insertPosition === 'between' && prevStation && nextStation && formMode === 'insert') {
-               const prevStationData = stations.find(s => s._id === prevStation);
-               const nextStationData = stations.find(s => s._id === nextStation);
+          if (formMode === 'create' || formMode === 'insert') {
+               if (insertPosition === 'before') {
+                    setFormData(prev => ({ ...prev, distance: 0 }));
+               } else if (insertPosition === 'after' && stations.length > 0) {
+                    const lastStation = stations[stations.length - 1];
+                    const newDistance = (lastStation.distance || 0) + 1;
+                    setFormData(prev => ({ ...prev, distance: newDistance }));
+               } else if (insertPosition === 'between' && prevStation && nextStation && formMode === 'insert') {
+                    const prevStationData = stations.find(s => s._id === prevStation);
+                    const nextStationData = stations.find(s => s._id === nextStation);
 
-               if (prevStationData && nextStationData) {
-                    const currentDistance = prevStationData.distance || 0;
-                    const nextDistance = nextStationData.distance || 0;
-                    const minDistance = Math.round((currentDistance + 0.1) * 10) / 10;
-                    const maxDistance = Math.round((nextDistance - 0.1) * 10) / 10;
-                    const defaultDistance = Math.round(((minDistance + maxDistance) / 2) * 10) / 10;
-                    setFormData(prev => ({ ...prev, distance: defaultDistance }));
+                    if (prevStationData && nextStationData) {
+                         const currentDistance = prevStationData.distance || 0;
+                         const nextDistance = nextStationData.distance || 0;
+                         const minDistance = Math.round((currentDistance + 0.1) * 10) / 10;
+                         const maxDistance = Math.round((nextDistance - 0.1) * 10) / 10;
+                         const defaultDistance = Math.round(((minDistance + maxDistance) / 2) * 10) / 10;
+                         setFormData(prev => ({ ...prev, distance: defaultDistance }));
+                    }
                }
           }
      }, [prevStation, nextStation, insertPosition, formMode, stations])
+
+     // Separate useEffect to ensure 'before' position always sets distance to 0
+     useEffect(() => {
+          if ((formMode === 'create' || formMode === 'insert') && insertPosition === 'before') {
+               setFormData(prev => ({ ...prev, distance: 0 }));
+          }
+     }, [insertPosition, formMode])
 
      const fetchStations = async () => {
           try {
@@ -214,12 +229,13 @@ export default function StationManagement() {
 
      const openCreateForm = () => {
           setFormMode('create');
+          const defaultDistance = stations.length > 0 ? (stations[stations.length - 1].distance || 0) + 1 : 1;
           setFormData({
                name: '',
                route: 'Metro Line 1',
                prev_station: '',
                next_station: '',
-               distance: 0.3,
+               distance: defaultDistance,
                status: 1
           });
           setPrevStation('');
@@ -295,7 +311,7 @@ export default function StationManagement() {
                                                                  <TableCell>{station.route}</TableCell>
                                                                  <TableCell>{station.prev_station || "—"}</TableCell>
                                                                  <TableCell>{station.next_station || "—"}</TableCell>
-                                                                 <TableCell>{station.distance ? `${(station.distance * 10).toFixed(1)} km` : "—"}</TableCell>
+                                                                 <TableCell>{station.distance ? `${station.distance} km` : "—"}</TableCell>
                                                                  <TableCell>
                                                                       <Badge variant={station.status === 1 ? "default" : "outline"}>
                                                                            {station.status === 1 ? "Hoạt động" : "Không hoạt động"}
@@ -474,25 +490,39 @@ export default function StationManagement() {
                                              <div className="space-y-2 mt-4">
                                                   {(() => {
                                                        const range = getDistanceRange();
+                                                       const isBeforePosition = insertPosition === 'before';
+                                                       const displayValue = isBeforePosition ? 0 : (formData.distance || ((range.min + range.max) / 2));
+
                                                        return (
                                                             <>
                                                                  <Label htmlFor="distance">
-                                                                      Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">({range.min}-{range.max} = {range.min * 10}-{range.max * 10}km)</span>
+                                                                      Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">
+                                                                           {isBeforePosition ? '(0 km - cố định)' : `(${range.min}-${range.max} km)`}
+                                                                      </span>
                                                                  </Label>
                                                                  <Input
                                                                       id="distance"
                                                                       type="number"
-                                                                      min={range.min}
-                                                                      max={range.max}
+                                                                      min={isBeforePosition ? 0 : range.min}
+                                                                      max={isBeforePosition ? 0 : range.max}
                                                                       step="0.1"
-                                                                      value={formData.distance || ((range.min + range.max) / 2)}
-                                                                      onChange={(e) => setFormData({ ...formData, distance: parseFloat(e.target.value) })}
+                                                                      value={displayValue}
+                                                                      onChange={(e) => {
+                                                                           if (!isBeforePosition) {
+                                                                                setFormData({ ...formData, distance: parseFloat(e.target.value) });
+                                                                           }
+                                                                      }}
+                                                                      disabled={isBeforePosition}
                                                                       required
                                                                  />
                                                                  <p className="text-xs text-muted-foreground">
                                                                       {insertPosition === 'between' && prevStation && nextStation
                                                                            ? `Khoảng cách phải nằm giữa ga trước (${stations.find(s => s._id === prevStation)?.distance || 0}) và ga sau (${stations.find(s => s._id === nextStation)?.distance || 0})`
-                                                                           : 'Khoảng cách này sẽ được tính từ ga mới đến ga tiếp theo (x10 = km thực tế)'
+                                                                           : insertPosition === 'before'
+                                                                                ? 'Khoảng cách sẽ được đặt là 0 cho ga đầu tuyến (không thể thay đổi)'
+                                                                                : insertPosition === 'after'
+                                                                                     ? 'Khoảng cách từ ga mới đến ga tiếp theo'
+                                                                                     : 'Khoảng cách từ ga mới đến ga tiếp theo'
                                                                       }
                                                                  </p>
                                                             </>
@@ -529,19 +559,19 @@ export default function StationManagement() {
                                         <div className="grid grid-cols-2 gap-4">
                                              <div className="space-y-2">
                                                   <Label htmlFor="distance">
-                                                       Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">(0-0.8 = 0-8km)</span>
+                                                       Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">(0-10 km)</span>
                                                   </Label>
                                                   <Input
                                                        id="distance"
                                                        type="number"
                                                        min="0"
-                                                       max="0.8"
+                                                       max="10"
                                                        step="0.1"
                                                        value={formData.distance || 0}
                                                        onChange={(e) => setFormData({ ...formData, distance: parseFloat(e.target.value) })}
                                                   />
                                                   <p className="text-xs text-muted-foreground">
-                                                       Khoảng cách từ ga này đến ga tiếp theo (x10 = km thực tế)
+                                                       Khoảng cách từ ga này đến ga tiếp theo (km)
                                                   </p>
                                              </div>
                                              <div className="space-y-2">
