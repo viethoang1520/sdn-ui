@@ -14,6 +14,7 @@ import Sidebar from "./components/Sidebar"
 import UserApprovalTab from "./components/UserApprovalTab"
 import ScheduleManagement from "./components/ScheduleManagement";
 import AutoCreateSchedule from "./components/AutoCreateSchedule";
+import StationManagement from "./components/StationManagement";
 import UserManagementTab from "./components/UserManagementTab";
 
 interface DashboardMetric {
@@ -52,7 +53,7 @@ interface StationStatus {
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard")
-  const [language, setLanguage] = useState<"vi" | "en">("vi")
+  const [language, setLanguage] = useState<"vi" | "en">("en") // Default to English
   /* CHANGE HERE API */
   const [userApprovals, setUserApprovals] = useState<UserApproval[]>()
   const [dataAnalysis, setDataAnalysis] = useState(null)
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
     },
     {
       title: language === "vi" ? "Doanh thu hôm nay" : "Today's Revenue",
-      value: language === "vi" ? "12,450,000 VND" : "12,450,000 VND",
+      value: language === "vi" ? "12,450,000 VND" : "$530.25 USD",
       change: 8.2,
       icon: <CreditCard className="h-5 w-5 text-green-600" />,
     },
@@ -173,39 +174,45 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} language={language} />
       {/* Main content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
         {/* Header */}
         <Header language={language} setLanguage={setLanguage} activeTab={activeTab} />
         {/* Dashboard content */}
-        <main className="p-4 md:p-6">
-          {/* Dashboard Tab */}
-          {activeTab === "dashboard" && (
-            <DashboardTab metrics={metrics} stations={stationStatus} language={language} dataAnalysis={dataAnalysis} />
-          )}
-          {/* Fare Management Tab */}
-          {activeTab === "fare-management" && (
-            <FareManagementTab fareRules={fareRules} stations={stationStatus.map(s => s.name)} language={language} />
-          )}
-          {/* User Approval Tab */}
-          {activeTab === "user-approval" && (
-            <UserApprovalTab userApprovals={userApprovals} language={language} fetchUserApprove={fetchUserApproval} />
-          )}
-          {/* User Management Tab */}
+        <main className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+          <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800">
+            {/* Dashboard Tab */}
+            {activeTab === "dashboard" && (
+              <DashboardTab metrics={metrics} stations={stationStatus} language={language} dataAnalysis={dataAnalysis} />
+            )}
+            {/* Fare Management Tab */}
+            {activeTab === "fare-management" && (
+              <FareManagementTab fareRules={fareRules} stations={stationStatus.map(s => s.name)} language={language} />
+            )}
+            {/* User Approval Tab */}
+            {activeTab === "user-approval" && (
+              <UserApprovalTab userApprovals={userApprovals} language={language} fetchUserApprove={fetchUserApproval} />
+            )}
+            {/* Reports Tab */}
+                      {/* User Management Tab */}
           {activeTab === "user-management" && (
             <UserManagementTab />
           )}
-          {/* Reports Tab */}
-          {activeTab === "reports" && (
-            <ReportsTab stations={stationStatus.map(s => s.name)} language={language} />
-          )}
+            {activeTab === "reports" && (
+              <ReportsTab stations={stationStatus.map(s => s.name)} language={language} />
+            )}
 
-          {activeTab === 'schedule' && (
-            <ScheduleManagement />
-          )}
+            {activeTab === 'schedule' && (
+              <ScheduleManagement />
+            )}
 
-          {activeTab === 'auto-schedule' && (
-            <AutoCreateSchedule />
-          )}
+            {activeTab === 'auto-schedule' && (
+              <AutoCreateSchedule />
+            )}
+
+            {activeTab === 'station-management' && (
+              <StationManagement />
+            )}
+          </div>
         </main>
       </div>
     </div>
