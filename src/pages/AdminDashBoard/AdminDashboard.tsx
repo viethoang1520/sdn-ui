@@ -15,6 +15,7 @@ import UserApprovalTab from "./components/UserApprovalTab"
 import ScheduleManagement from "./components/ScheduleManagement";
 import AutoCreateSchedule from "./components/AutoCreateSchedule";
 import StationManagement from "./components/StationManagement";
+import UserManagementTab from "./components/UserManagementTab";
 
 interface DashboardMetric {
   title: string
@@ -192,6 +193,10 @@ const AdminDashboard = () => {
               <UserApprovalTab userApprovals={userApprovals} language={language} fetchUserApprove={fetchUserApproval} />
             )}
             {/* Reports Tab */}
+                      {/* User Management Tab */}
+          {activeTab === "user-management" && (
+            <UserManagementTab />
+          )}
             {activeTab === "reports" && (
               <ReportsTab stations={stationStatus.map(s => s.name)} language={language} />
             )}
