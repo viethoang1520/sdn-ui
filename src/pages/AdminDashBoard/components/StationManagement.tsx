@@ -75,23 +75,6 @@ export default function StationManagement() {
      const [prevStation, setPrevStation] = useState<string>('')
      const [nextStation, setNextStation] = useState<string>('')
 
-     // Hàm để tính toán range distance cho việc chèn ga
-     const getDistanceRange = () => {
-          if (insertPosition === 'between' && prevStation && nextStation) {
-               const prevStationData = stations.find(s => s._id === prevStation);
-               const nextStationData = stations.find(s => s._id === nextStation);
-
-               if (prevStationData && nextStationData) {
-                    const currentDistance = prevStationData.distance || 0;
-                    const nextDistance = nextStationData.distance || 0;
-                    const minDistance = Math.round((currentDistance + 0.1) * 10) / 10;
-                    const maxDistance = Math.round((nextDistance - 0.1) * 10) / 10;
-                    return { min: minDistance, max: maxDistance };
-               }
-          }
-          return { min: 0.1, max: 10 };
-     };
-
      useEffect(() => {
           fetchStations()
      }, [])
@@ -119,13 +102,6 @@ export default function StationManagement() {
                }
           }
      }, [prevStation, nextStation, insertPosition, formMode, stations])
-
-     // Separate useEffect to ensure 'before' position always sets distance to 0
-     useEffect(() => {
-          if ((formMode === 'create' || formMode === 'insert') && insertPosition === 'before') {
-               setFormData(prev => ({ ...prev, distance: 0 }));
-          }
-     }, [insertPosition, formMode])
 
      const fetchStations = async () => {
           try {
@@ -488,46 +464,21 @@ export default function StationManagement() {
                                              )}
 
                                              <div className="space-y-2 mt-4">
-                                                  {(() => {
-                                                       const range = getDistanceRange();
-                                                       const isBeforePosition = insertPosition === 'before';
-                                                       const displayValue = isBeforePosition ? 0 : (formData.distance || ((range.min + range.max) / 2));
-
-                                                       return (
-                                                            <>
-                                                                 <Label htmlFor="distance">
-                                                                      Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">
-                                                                           {isBeforePosition ? '(0 km - cố định)' : `(${range.min}-${range.max} km)`}
-                                                                      </span>
-                                                                 </Label>
-                                                                 <Input
-                                                                      id="distance"
-                                                                      type="number"
-                                                                      min={isBeforePosition ? 0 : range.min}
-                                                                      max={isBeforePosition ? 0 : range.max}
-                                                                      step="0.1"
-                                                                      value={displayValue}
-                                                                      onChange={(e) => {
-                                                                           if (!isBeforePosition) {
-                                                                                setFormData({ ...formData, distance: parseFloat(e.target.value) });
-                                                                           }
-                                                                      }}
-                                                                      disabled={isBeforePosition}
-                                                                      required
-                                                                 />
-                                                                 <p className="text-xs text-muted-foreground">
-                                                                      {insertPosition === 'between' && prevStation && nextStation
-                                                                           ? `Khoảng cách phải nằm giữa ga trước (${stations.find(s => s._id === prevStation)?.distance || 0}) và ga sau (${stations.find(s => s._id === nextStation)?.distance || 0})`
-                                                                           : insertPosition === 'before'
-                                                                                ? 'Khoảng cách sẽ được đặt là 0 cho ga đầu tuyến (không thể thay đổi)'
-                                                                                : insertPosition === 'after'
-                                                                                     ? 'Khoảng cách từ ga mới đến ga tiếp theo'
-                                                                                     : 'Khoảng cách từ ga mới đến ga tiếp theo'
-                                                                      }
-                                                                 </p>
-                                                            </>
-                                                       );
-                                                  })()}
+                                                  <Label htmlFor="distance">
+                                                       Khoảng cách đến ga tiếp theo <span className="text-xs text-muted-foreground">(km)</span>
+                                                  </Label>
+                                                  <Input
+                                                       id="distance"
+                                                       type="number"
+                                                       step="0.1"
+                                                       value={formData.distance !== undefined ? formData.distance : 0}
+                                                       onChange={(e) => setFormData({ ...formData, distance: parseFloat(e.target.value) || 0 })}
+                                                       placeholder="Nhập khoảng cách"
+                                                       required
+                                                  />
+                                                  <p className="text-xs text-orange-600 bg-orange-50 p-2 rounded border">
+                                                       ⚠️ Lưu ý: Khoảng cách sẽ được kiểm tra tính hợp lệ khi lưu. Vui lòng đảm bảo giá trị phù hợp với vị trí chèn.
+                                                  </p>
                                              </div>
                                         </div>
                                    </div>
